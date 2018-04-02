@@ -37,8 +37,8 @@
             targetPackage     指定生成的model生成所在的包名
             targetProject     指定在该项目下所在的路径
         -->
-        <!--<javaModelGenerator targetPackage="com.ymall.pojo" targetProject=".\src\main\java">-->
-        <javaModelGenerator targetPackage="top.yeonon.ymallsb.pojo" targetProject="./src/main/java">
+        <!--<javaModelGenerator targetPackage="com.lmmall.pojo" targetProject=".\src\main\java">-->
+        <javaModelGenerator targetPackage="top.yeonon.lmmall.entity" targetProject="./src/main/java">
             <!-- 是否允许子包，即targetPackage.schemaName.tableName -->
             <property name="enableSubPackages" value="false"/>
             <!-- 是否对model添加 构造函数 -->
@@ -63,24 +63,24 @@
 
         <!-- targetPackage：mapper接口dao生成的位置 -->
         <!--<javaClientGenerator type="XMLMAPPER" targetPackage="com.mmall.dao" targetProject=".\src\main\java">-->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="top.yeonon.ymallsb.repository" targetProject="./src/main/java">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="top.yeonon.lmmall.repository" targetProject="./src/main/java">
             <!-- enableSubPackages:是否让schema作为包的后缀 -->
             <property name="enableSubPackages" value="false" />
         </javaClientGenerator>
 
 
-        <table tableName="ymall_shipping" domainObjectName="Shipping" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table tableName="ymall_cart" domainObjectName="Cart" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table tableName="ymall_cart_item" domainObjectName="CartItem" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table tableName="ymall_category" domainObjectName="Category" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table tableName="ymall_order" domainObjectName="Order" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table tableName="ymall_order_item" domainObjectName="OrderItem" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table tableName="ymall_pay_info" domainObjectName="PayInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table tableName="ymall_product" domainObjectName="Product" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        <table mapperName="ShippingRepository" tableName="lmmall_shipping" domainObjectName="Shipping" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table mapperName="CartRepository" tableName="lmmall_cart" domainObjectName="Cart" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table mapperName="CartItemRepository" tableName="lmmall_cart_item" domainObjectName="CartItem" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table mapperName="CategoryRepository" tableName="lmmall_category" domainObjectName="Category" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table mapperName="OrderRepository" tableName="lmmall_order" domainObjectName="Order" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table mapperName="OrderItemRepository" tableName="lmmall_order_item" domainObjectName="OrderItem" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table mapperName="PayInfoRepository" tableName="lmmall_pay_info" domainObjectName="PayInfo" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table mapperName="ProductRepository" tableName="lmmall_product" domainObjectName="Product" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
             <columnOverride column="detail" jdbcType="VARCHAR" />
             <columnOverride column="sub_images" jdbcType="VARCHAR" />
         </table>
-        <table tableName="ymall_user" domainObjectName="User" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <table mapperName="UserRepository" tableName="lmmall_user" domainObjectName="User" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
 
 
         <!-- geelynote mybatis插件的搭建 -->
