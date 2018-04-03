@@ -1,11 +1,10 @@
 package top.yeonon.lmmall.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
+import top.yeonon.lmmall.repository.UserRepository;
 import top.yeonon.lmmall.service.IUserService;
 
 /**
@@ -19,9 +18,8 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @GetMapping("{id}")
-    public User getUserById(@PathVariable("id") Integer id) {
-        return userService.getUserById(id);
+    @PostMapping
+    public ServerResponse register(User user) {
+        return userService.register(user);
     }
-
 }

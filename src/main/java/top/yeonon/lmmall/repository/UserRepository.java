@@ -1,6 +1,7 @@
 package top.yeonon.lmmall.repository;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import top.yeonon.lmmall.entity.User;
 
 @Mapper
@@ -16,4 +17,8 @@ public interface UserRepository {
     int updateByPrimaryKeySelective(User record);
 
     int updateByPrimaryKey(User record);
+
+    int checkUserField(@Param("info") String info, @Param("type") String type);
+
+    User selectLogin(@Param("username") String username, @Param("password") String password);
 }

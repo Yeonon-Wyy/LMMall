@@ -5,8 +5,9 @@ import top.yeonon.lmmall.entity.User;
 
 /**
  * @Author yeonon
- * @date 2018/4/2 0002 19:33
+ * @date 2018/4/3 0003 19:48
  **/
-public interface IUserService {
-    ServerResponse register(User user);
+public interface ISessionService {
+
+    ServerResponse<User> login(String username, String password);
 }
