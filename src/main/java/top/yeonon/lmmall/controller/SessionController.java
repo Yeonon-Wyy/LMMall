@@ -25,11 +25,6 @@ public class SessionController {
      */
     @PostMapping
     public ServerResponse<User> login(HttpSession session, String username, String password) {
-        //先查看Session中是否已经有用户信息，有就表示用户已经登录，禁止重复登录
-        User currentUser = getUserInfoInSession(session);
-        if (currentUser != null) {
-            return ServerResponse.createByErrorMessage("用户" + username + "已登录，请勿重复登录！");
-        }
         ServerResponse<User> serverResponse = sessionService.login(username, password);
         if (serverResponse.isSuccess()) {
             session.setAttribute(ServerConst.SESSION_KEY_FOR_CURRENT, serverResponse.getData());

@@ -12,6 +12,8 @@ public interface ServerConst {
      */
     String SESSION_KEY_FOR_CURRENT = SESSION_KEY_PREFIX + "CURRENT_USER";
 
+    String FORGET_PASSWORD_TOKEN_KEY = "FORGET_PASSWORD_TOKEN_KEY:";
+
 
     enum UserFieldValidate {
         EMAIL("email"),

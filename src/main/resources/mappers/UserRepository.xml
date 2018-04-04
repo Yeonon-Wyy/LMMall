@@ -166,4 +166,42 @@
     WHERE username=#{username}
     AND password=#{password}
   </select>
+
+  <select id="selectQuestionByUsername" resultType="string" parameterType="string">
+    SELECT
+    question
+    FROM lmmall_user
+    WHERE username=#{username}
+  </select>
+
+  <select id="checkAnswer" resultType="int" parameterType="map">
+    SELECT
+    COUNT(1)
+    FROM lmmall_user
+    WHERE username=#{username}
+    AND question=#{question}
+    AND answer=#{answer}
+  </select>
+
+  <update id="updatePassword" parameterType="map" >
+    UPDATE lmmall_user
+    SET password=#{password},update_time=now()
+    WHERE username=#{username}
+  </update>
+
+  <select id="checkEmailByUserId" parameterType="map" resultType="int">
+    SELECT
+    COUNT(1)
+    FROM lmmall_user
+    WHERE email=#{email}
+    AND id=#{id}
+  </select>
+
+  <select id="checkPhoneByUserId" parameterType="map" resultType="int">
+    SELECT
+    COUNT(1)
+    FROM lmmall_user
+    WHERE phone=#{phone}
+    AND id=#{id}
+  </select>
 </mapper>
