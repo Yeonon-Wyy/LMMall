@@ -4,6 +4,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.yeonon.lmmall.entity.User;
 
+import java.util.List;
+
 @Mapper
 public interface UserRepository {
     int deleteByPrimaryKey(Integer id);
@@ -31,4 +33,6 @@ public interface UserRepository {
     int checkEmailByUserId(@Param("email") String email, @Param("id") Integer id);
 
     int checkPhoneByUserId(@Param("phone") String phone, @Param("id") Integer id);
+
+    List<User> selectUserList();
 }

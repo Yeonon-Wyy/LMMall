@@ -1,5 +1,6 @@
 package top.yeonon.lmmall.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,6 +14,7 @@ import top.yeonon.lmmall.repository.UserRepository;
 import top.yeonon.lmmall.service.IUserService;
 import top.yeonon.lmmall.utils.MD5Utils;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -145,6 +147,24 @@ public class UserService implements IUserService {
             return ServerResponse.createByErrorMessage("更新失败");
         }
         return ServerResponse.createBySuccessMessage("更新成功");
+    }
+
+    @Override
+    public ServerResponse deleteUser(Integer id) {
+        int rowCount = userRepository.deleteByPrimaryKey(id);
+        if (rowCount <= 0) {
+            return ServerResponse.createByErrorMessage("删除失败，可能是没有这个用户");
+        }
+        return ServerResponse.createBySuccessMessage("删除用户成功！");
+    }
+
+    @Override
+    public ServerResponse<List<User>> getUserList() {
+        List<User> userList = userRepository.selectUserList();
+        if (CollectionUtils.isEmpty(userList)) {
+            return ServerResponse.createByErrorMessage("当前系统中没有用户");
+        }
+        return ServerResponse.createBySuccess(userList);
     }
 
     /**

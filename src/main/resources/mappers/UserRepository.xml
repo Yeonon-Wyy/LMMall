@@ -204,4 +204,10 @@
     WHERE phone=#{phone}
     AND id=#{id}
   </select>
+
+  <select id="selectUserList" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_user
+  </select>
 </mapper>
