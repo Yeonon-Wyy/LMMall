@@ -9,7 +9,7 @@ import java.security.MessageDigest;
  * @Author yeonon
  * @date 2018/4/3 0003 20:14
  **/
-public class MD5Utils {
+public final class MD5Utils {
 
     private final static CoreProperties coreProperties;
 
