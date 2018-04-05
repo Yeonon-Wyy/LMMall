@@ -179,4 +179,15 @@ public class UserService implements IUserService {
         return ServerResponse.createBySuccess();
     }
 
+
+    //backend
+
+
+    @Override
+    public ServerResponse checkAdminRole(User user) {
+        if (user != null && user.getRole().equals(ServerConst.Role.ADMIN.getCode())) {
+            return ServerResponse.createBySuccess();
+        }
+        return ServerResponse.createByError();
+    }
 }

@@ -9,6 +9,7 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.service.ISessionService;
+import top.yeonon.lmmall.service.IUserService;
 
 import javax.servlet.http.HttpSession;
 
@@ -23,12 +24,16 @@ public class SessionManagerController {
     @Autowired
     private ISessionService sessionService;
 
+    @Autowired
+    private IUserService userService;
+
     @PostMapping
     public ServerResponse<User> login(HttpSession session, String username, String password) {
         ServerResponse<User> serverResponse = sessionService.login(username, password);
         if (serverResponse.isSuccess()) {
             User user = serverResponse.getData();
-            if (user.getRole() == ServerConst.Role.ADMIN.getCode()) {
+            ServerResponse checkResponse = userService.checkAdminRole(user);
+            if (checkResponse.isSuccess()) {
                 session.setAttribute(ServerConst.SESSION_KEY_FOR_CURRENT, user);
                 return ServerResponse.createBySuccess("登录成功", user);
             }
@@ -36,6 +41,5 @@ public class SessionManagerController {
         }
         return serverResponse;
     }
-
 
 }

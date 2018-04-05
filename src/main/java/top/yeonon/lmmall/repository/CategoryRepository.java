@@ -3,6 +3,8 @@ package top.yeonon.lmmall.repository;
 import org.apache.ibatis.annotations.Mapper;
 import top.yeonon.lmmall.entity.Category;
 
+import java.util.List;
+
 @Mapper
 public interface CategoryRepository {
     int deleteByPrimaryKey(Integer id);
@@ -16,4 +18,6 @@ public interface CategoryRepository {
     int updateByPrimaryKeySelective(Category record);
 
     int updateByPrimaryKey(Category record);
+
+    List<Category> selectParallelChildrenCategoryByParentId(Integer parentId);
 }

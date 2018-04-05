@@ -17,18 +17,23 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("backend/users/")
-public class BackendUserController {
+public class UserManagerController {
 
     @Autowired
     private IUserService userService;
 
+    /**
+     * 获取用户列表，需要管理员的身份
+     * Ps：这里先这样写是为了把业务逻辑先写，后面会抽离出来单独作为一个项目
+     */
     @GetMapping
     public ServerResponse<List<User>> getUserList(HttpSession session) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
         }
-        if (user.getRole() != ServerConst.Role.ADMIN.getCode()) {
+        ServerResponse checkResponse = userService.checkAdminRole(user);
+        if (!checkResponse.isSuccess()) {
             return ServerResponse.createByErrorMessage("没有权限");
         }
         return userService.getUserList();
@@ -40,7 +45,8 @@ public class BackendUserController {
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
         }
-        if (user.getRole() != ServerConst.Role.ADMIN.getCode()) {
+        ServerResponse checkResponse = userService.checkAdminRole(user);
+        if (!checkResponse.isSuccess()) {
             return ServerResponse.createByErrorMessage("没有权限");
         }
         if (user.getId().equals(id)) {
@@ -48,14 +54,4 @@ public class BackendUserController {
         }
         return userService.deleteUser(id);
     }
-
-    @GetMapping("test")
-    public ServerResponse getSession(HttpSession session) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        System.out.println(user.getUsername());
-        return ServerResponse.createBySuccess(user);
-    }
-
-
-
 }

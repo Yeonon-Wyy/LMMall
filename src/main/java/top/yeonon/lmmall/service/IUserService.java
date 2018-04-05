@@ -26,4 +26,6 @@ public interface IUserService {
     ServerResponse deleteUser(Integer id);
 
     ServerResponse<List<User>> getUserList();
+
+    ServerResponse checkAdminRole(User user);
 }
