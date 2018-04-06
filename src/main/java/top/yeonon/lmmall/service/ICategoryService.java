@@ -8,6 +8,8 @@ import top.yeonon.lmmall.common.ServerResponse;
  **/
 public interface ICategoryService {
 
+
+    //backend
     ServerResponse addCategory(Integer parentId, String categoryName);
 
     ServerResponse updateCategory(Integer categoryId, String categoryName);

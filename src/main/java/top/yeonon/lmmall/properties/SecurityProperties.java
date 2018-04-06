@@ -1,4 +1,4 @@
-package top.yeonon.lmmall.utils.properties;
+package top.yeonon.lmmall.properties;
 
 import lombok.Getter;
 import lombok.Setter;

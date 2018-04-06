@@ -1,7 +1,7 @@
 package top.yeonon.lmmall.utils;
 
 
-import top.yeonon.lmmall.utils.properties.CoreProperties;
+import top.yeonon.lmmall.properties.CoreProperties;
 
 import java.security.MessageDigest;
 

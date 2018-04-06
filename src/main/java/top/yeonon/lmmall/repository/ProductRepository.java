@@ -1,7 +1,10 @@
 package top.yeonon.lmmall.repository;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import top.yeonon.lmmall.entity.Product;
+
+import java.util.List;
 
 @Mapper
 public interface ProductRepository {
@@ -16,4 +19,6 @@ public interface ProductRepository {
     int updateByPrimaryKeySelective(Product record);
 
     int updateByPrimaryKey(Product record);
+
+    List<Product> selectProductsByNameAndProductIds(@Param("productName") String productName, @Param("productIds") List<Integer> productIds);
 }

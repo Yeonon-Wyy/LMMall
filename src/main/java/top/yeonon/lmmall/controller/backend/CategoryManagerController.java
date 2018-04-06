@@ -27,6 +27,10 @@ public class CategoryManagerController {
     @Autowired
     private IUserService userService;
 
+    /**
+     *添加品类
+     * @return
+     */
     @PostMapping
     public ServerResponse addCategory(HttpSession session, @RequestParam(value = "parentId", defaultValue = "0") Integer parentId,
                                       String categoryName) {
@@ -41,6 +45,9 @@ public class CategoryManagerController {
         return categoryService.addCategory(parentId, categoryName);
     }
 
+    /**
+     * 更新品类名称
+     */
     @PutMapping("/{id}")
     public ServerResponse updateCategory(HttpSession session, @PathVariable("id") Integer categoryId,
                                          String categoryName) {
@@ -56,6 +63,9 @@ public class CategoryManagerController {
         return categoryService.updateCategory(categoryId, categoryName);
     }
 
+    /**
+     * 获取平级（单层）的品类信息
+     */
     @GetMapping("parallel/{parentId}")
     public ServerResponse getParallelChildrenCategory(HttpSession session
                                                                       ,@PathVariable("parentId") Integer parentId) {
@@ -70,6 +80,16 @@ public class CategoryManagerController {
         return categoryService.getParallelChildrenCategory(parentId);
     }
 
+    /**
+     * 递归获取所有子层的品类信息
+     * 如果存在下面这样的层级关系
+     * 0 -> 10000 > 100010
+     * 如果 categoryId == 0，那么会获取和10000同一层（以0为父）的品类，且会继续怼
+     * 和10000做相同的操作，即获取100010同级且父亲是10000的所有品类
+     *
+     * 如果 categoryId == 10000,则仅仅获取100010层级中父亲为10000的品类以及下面的品类，和10000
+     * 同层的不受影响
+     */
     @GetMapping("deep/{categoryId}")
     public ServerResponse getDeepChildrenCategory(HttpSession session, @PathVariable("categoryId") Integer categoryId) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);

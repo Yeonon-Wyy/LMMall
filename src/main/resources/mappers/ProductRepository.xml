@@ -176,4 +176,20 @@
       update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectProductsByNameAndProductIds" parameterType="map" resultMap="BaseResultMap" >
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_product
+    WHERE status = 1
+    <if test="productName != null">
+      AND name LIKE #{productName}
+    </if>
+    <if test="productIds">
+      AND category_id in
+      <foreach collection="productIds" open="(" separator="," close=")" item="item" index="index">
+        #{item}
+      </foreach>
+    </if>
+  </select>
 </mapper>

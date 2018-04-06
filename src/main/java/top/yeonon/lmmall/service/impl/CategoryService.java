@@ -1,5 +1,6 @@
 package top.yeonon.lmmall.service.impl;
 
+import com.sun.corba.se.spi.activation.Server;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +94,9 @@ public class CategoryService implements ICategoryService {
 
         Set<Category> categorySet = new HashSet<>();
         deepSearch(categorySet, categoryId);
+        if (CollectionUtils.isEmpty(categorySet)) {
+            return ServerResponse.createByErrorMessage("没有找到任何一个品类，请检查参数");
+        }
 
         List<Integer> categoryIdList = new ArrayList<>();
         for (Category category : categorySet) {

@@ -1,5 +1,12 @@
 package top.yeonon.lmmall.common;
 
+import com.google.common.collect.Sets;
+import edu.princeton.cs.algs4.SET;
+import org.apache.commons.collections.SetUtils;
+
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @Author yeonon
  * @date 2018/4/2 0002 20:49
@@ -14,6 +21,11 @@ public interface ServerConst {
 
     String FORGET_PASSWORD_TOKEN_KEY = "FORGET_PASSWORD_TOKEN_KEY:";
 
+
+    public interface ProductOrderBy {
+        Set<String> ORDER_BY_PRICE = Sets.newHashSet("price_asc","price_desc");
+        Set<String> ORDER_BY_NAME = Sets.newHashSet("name_asc","name_desc");
+    }
 
     enum UserFieldValidate {
         EMAIL("email"),
