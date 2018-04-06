@@ -155,9 +155,7 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null">
-        update_time = now(),
-      </if>
+      update_time = now(),
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -191,5 +189,26 @@
         #{item}
       </foreach>
     </if>
+  </select>
+
+  <select id="selectProducts" resultMap="BaseResultMap" >
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_product
+  </select>
+
+  <select id="searchProductsByNameAndId" parameterType="map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_product
+    <where>
+      <if test="productName != null">
+        AND name LIKE #{productName}
+      </if>
+      <if test="productId != null">
+        AND id=#{productId}
+      </if>
+    </where>
+
   </select>
 </mapper>

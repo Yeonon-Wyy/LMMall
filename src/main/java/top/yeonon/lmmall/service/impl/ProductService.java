@@ -3,6 +3,7 @@ package top.yeonon.lmmall.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,6 @@ import top.yeonon.lmmall.service.IProductService;
 import top.yeonon.lmmall.vo.ProductDetailsVo;
 import top.yeonon.lmmall.vo.ProductListVo;
 
-import java.util.ArrayList;
 import java.util.List;
 import top.yeonon.lmmall.properties.CoreProperties;
 
@@ -96,6 +96,90 @@ public class ProductService implements IProductService {
         }
 
         Product product = productRepository.selectByPrimaryKey(productId);
+        if (product == null || !product.getStatus().equals(ServerConst.ProductStatus.ON_SELL.getCode())) {
+            return ServerResponse.createByErrorMessage("没有找到该商品或者该商品已下架");
+        }
+        ProductDetailsVo productDetailsVo = assembleProductDetailsVo(product);
+        return ServerResponse.createBySuccess(productDetailsVo);
+    }
+
+
+    //backend
+
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public ServerResponse<PageInfo> getManageProducts(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Product> productList = productRepository.selectProducts();
+
+        if (CollectionUtils.isEmpty(productList)) {
+            return ServerResponse.createByErrorMessage("没有找到任何商品");
+        }
+
+        List<ProductListVo> productListVos = Lists.newArrayList();
+        for (Product product : productList) {
+            productListVos.add(assembleProductListVo(product));
+        }
+        PageInfo pageInfo = new PageInfo(productList);
+        pageInfo.setList(productListVos);
+        return ServerResponse.createBySuccess(pageInfo);
+    }
+
+
+    @Override
+    public ServerResponse addOrUpdateProduct(Product product) {
+        if (product == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
+                    "参数错误!(product无效)");
+        }
+
+        if (product.getId() != null) {
+            //不为null表示这是一次更新操作
+            int rowCount = productRepository.updateByPrimaryKeySelective(product);
+            if (rowCount < 0) {
+                return ServerResponse.createByErrorMessage("更新商品失败");
+            }
+            return ServerResponse.createBySuccessMessage("更新商品成功");
+        }
+        //如果上面没有返回，就表示product 的id没有传进来，这时候就是增加商品
+        int rowCount = productRepository.insert(product);
+        if (rowCount < 0) {
+            return ServerResponse.createByErrorMessage("添加商品失败");
+        }
+        return ServerResponse.createBySuccessMessage("添加商品成功!");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public ServerResponse<PageInfo> search(String productName, Integer productId, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        if (StringUtils.isNotBlank(productName)) {
+            productName = new StringBuilder().append("%").append(productName).append("%").toString();
+        }
+        List<Product> productList = productRepository.searchProductsByNameAndId(productName, productId);
+
+        if (CollectionUtils.isEmpty(productList)) {
+            return ServerResponse.createByErrorMessage("没有找到符合条件的任何商品");
+        }
+
+        List<ProductListVo> productListVoList = Lists.newArrayList();
+        for (Product product : productList) {
+            productListVoList.add(assembleProductListVo(product));
+        }
+        PageInfo pageInfo = new PageInfo(productList);
+        pageInfo.setList(productListVoList);
+        return ServerResponse.createBySuccess(pageInfo);
+    }
+
+    @Override
+    public ServerResponse<ProductDetailsVo> getManageProductDetails(Integer productId) {
+        if (productId == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
+                    "参数错误（productId不能为空）");
+        }
+
+        Product product = productRepository.selectByPrimaryKey(productId);
         if (product == null) {
             return ServerResponse.createByErrorMessage("没有找到该商品");
         }
@@ -103,6 +187,23 @@ public class ProductService implements IProductService {
         return ServerResponse.createBySuccess(productDetailsVo);
     }
 
+    @Override
+    public ServerResponse updateProductStatus(Integer productId, Integer status) {
+        if (productId == null || status == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
+                    "参数错误（productId或者status不能为空）");
+        }
+
+        Product product = new Product();
+        product.setId(productId);
+        product.setStatus(status);
+
+        int rowCount = productRepository.updateByPrimaryKeySelective(product);
+        if (rowCount <= 0) {
+            return ServerResponse.createByErrorMessage("商品上下架失败");
+        }
+        return ServerResponse.createBySuccessMessage("商品上下架成功");
+    }
 
     /**
      *     装配productList VO 对象

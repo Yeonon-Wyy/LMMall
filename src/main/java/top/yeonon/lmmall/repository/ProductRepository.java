@@ -21,4 +21,8 @@ public interface ProductRepository {
     int updateByPrimaryKey(Product record);
 
     List<Product> selectProductsByNameAndProductIds(@Param("productName") String productName, @Param("productIds") List<Integer> productIds);
+
+    List<Product> selectProducts();
+
+    List<Product> searchProductsByNameAndId(@Param("productName") String productName, @Param("productId") Integer productId);
 }

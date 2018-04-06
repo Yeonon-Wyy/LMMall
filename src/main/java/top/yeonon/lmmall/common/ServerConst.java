@@ -22,9 +22,28 @@ public interface ServerConst {
     String FORGET_PASSWORD_TOKEN_KEY = "FORGET_PASSWORD_TOKEN_KEY:";
 
 
-    public interface ProductOrderBy {
+    interface ProductOrderBy {
         Set<String> ORDER_BY_PRICE = Sets.newHashSet("price_asc","price_desc");
         Set<String> ORDER_BY_NAME = Sets.newHashSet("name_asc","name_desc");
+    }
+
+    enum ProductStatus {
+        ON_SELL(1, "在售状态");
+
+        private Integer code;
+        private String desc;
+        ProductStatus(Integer code, String desc) {
+            this.code = code;
+            this.desc = desc;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
     }
 
     enum UserFieldValidate {

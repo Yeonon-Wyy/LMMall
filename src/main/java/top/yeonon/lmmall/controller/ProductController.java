@@ -19,6 +19,9 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
+    /**
+     * 前台获取商品列表（未上架的不会显示）
+     */
     @GetMapping
     public ServerResponse<PageInfo> getProductList(@RequestParam(value = "categoryId", required = false) Integer categoryId,
                                                    @RequestParam(value = "keyword", required = false) String keyword,
