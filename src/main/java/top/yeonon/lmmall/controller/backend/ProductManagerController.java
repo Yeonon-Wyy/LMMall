@@ -1,18 +1,24 @@
 package top.yeonon.lmmall.controller.backend;
 
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.Product;
 import top.yeonon.lmmall.entity.User;
+import top.yeonon.lmmall.properties.CoreProperties;
+import top.yeonon.lmmall.service.IFileService;
 import top.yeonon.lmmall.service.IProductService;
 import top.yeonon.lmmall.service.IUserService;
 import top.yeonon.lmmall.vo.ProductDetailsVo;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * @Author yeonon
@@ -27,6 +33,12 @@ public class ProductManagerController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IFileService fileService;
+
+    @Autowired
+    private CoreProperties coreProperties;
 
     /**
      * 获取所有商品，不需要排序和关键字（就是所有，就是那么暴力！）
@@ -131,5 +143,30 @@ public class ProductManagerController {
             return ServerResponse.createByErrorMessage("没有权限");
         }
         return productService.updateProductStatus(productId, status);
+    }
+
+    /**
+     * 上传图片
+     */
+    @PostMapping("upload")
+    public ServerResponse uploadImage(HttpSession session, HttpServletRequest request,
+                            @RequestParam(value = "upload_file", required = false)MultipartFile file) {
+        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        if (user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
+        }
+        ServerResponse checkResponse = userService.checkAdminRole(user);
+        if (!checkResponse.isSuccess()) {
+            return ServerResponse.createByErrorMessage("没有权限");
+        }
+
+        String path = request.getServletContext().getRealPath("upload");
+        String targetFileName = fileService.upload(file, path);
+        String url = coreProperties.getFtp().getHostPrefix() + targetFileName;
+
+        Map<String, String> fileMap = Maps.newHashMap();
+        fileMap.put("uri", targetFileName);
+        fileMap.put("url", url);
+        return ServerResponse.createBySuccess(fileMap);
     }
 }

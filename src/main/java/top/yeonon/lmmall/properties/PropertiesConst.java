@@ -28,5 +28,5 @@ public interface PropertiesConst {
     /**
      * ftp 服务器默认域名前缀
      */
-    String FTP_SERVER_HOST_PREFIX = "http://image.lmmall.com/img/";
+    String FTP_SERVER_HOST_PREFIX = "http://image.lmmall.com/";
 }
