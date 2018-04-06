@@ -15,6 +15,7 @@ import top.yeonon.lmmall.repository.CategoryRepository;
 import top.yeonon.lmmall.repository.ProductRepository;
 import top.yeonon.lmmall.service.ICategoryService;
 import top.yeonon.lmmall.service.IProductService;
+import top.yeonon.lmmall.vo.ProductDetailsVo;
 import top.yeonon.lmmall.vo.ProductListVo;
 
 import java.util.ArrayList;
@@ -87,6 +88,26 @@ public class ProductService implements IProductService {
         return ServerResponse.createBySuccess(pageInfo);
     }
 
+    @Override
+    public ServerResponse<ProductDetailsVo> getProductDetails(Integer productId) {
+        if (productId == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
+                    "参数错误（productId不能为空）");
+        }
+
+        Product product = productRepository.selectByPrimaryKey(productId);
+        if (product == null) {
+            return ServerResponse.createByErrorMessage("没有找到该商品");
+        }
+        ProductDetailsVo productDetailsVo = assembleProductDetailsVo(product);
+        return ServerResponse.createBySuccess(productDetailsVo);
+    }
+
+
+    /**
+     *     装配productList VO 对象
+     */
+
     private ProductListVo assembleProductListVo(Product product) {
         ProductListVo productListVo = new ProductListVo();
         productListVo.setId(product.getId());
@@ -98,5 +119,33 @@ public class ProductService implements IProductService {
         productListVo.setSubTitle(product.getSubtitle());
         productListVo.setImageHost(coreProperties.getFtp().getHostPrefix());
         return productListVo;
+    }
+
+    /**
+     * 装配productDetails对象
+     */
+    private ProductDetailsVo assembleProductDetailsVo(Product product) {
+        ProductDetailsVo productDetailsVo = new ProductDetailsVo();
+        productDetailsVo.setCategoryId(product.getCategoryId());
+        productDetailsVo.setProductId(product.getId());
+        productDetailsVo.setName(product.getName());
+        productDetailsVo.setMainImage(product.getMainImage());
+        productDetailsVo.setSubImage(product.getSubImages());
+        productDetailsVo.setSubTitle(product.getSubtitle());
+        productDetailsVo.setPrice(product.getPrice());
+        productDetailsVo.setStatus(product.getStatus());
+        productDetailsVo.setStock(product.getStock());
+
+        Category category = categoryRepository.selectByPrimaryKey(product.getCategoryId());
+        if (category == null) {
+            productDetailsVo.setParentCategoryId(0);
+        } else {
+            productDetailsVo.setParentCategoryId(category.getParentId());
+        }
+
+        productDetailsVo.setCreateTime(product.getCreateTime());
+        productDetailsVo.setUpdateTime(product.getUpdateTime());
+        productDetailsVo.setImageHost(coreProperties.getFtp().getHostPrefix());
+        return productDetailsVo;
     }
 }

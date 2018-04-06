@@ -2,6 +2,7 @@ package top.yeonon.lmmall.service;
 
 import com.github.pagehelper.PageInfo;
 import top.yeonon.lmmall.common.ServerResponse;
+import top.yeonon.lmmall.vo.ProductDetailsVo;
 
 /**
  * @Author yeonon
@@ -10,4 +11,6 @@ import top.yeonon.lmmall.common.ServerResponse;
 public interface IProductService {
 
     ServerResponse<PageInfo> getProducts(String keyword, Integer categoryId, Integer pageNum, Integer pageSize, String orderBy);
+
+    ServerResponse<ProductDetailsVo> getProductDetails(Integer productId);
 }
