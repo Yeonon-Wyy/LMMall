@@ -27,6 +27,14 @@ public interface ServerConst {
         Set<String> ORDER_BY_NAME = Sets.newHashSet("name_asc","name_desc");
     }
 
+    interface Cart {
+        int CHECKED = 1;
+        int UNCHECKED = 0;
+
+        String LIMIT_NUMBER_SUCCESS = "LIMIT_NUMBER_SUCCESS";
+        String LIMIT_NUMBER_FAIL = "LIMIT_NUMBER_FAIL";
+    }
+
     enum ProductStatus {
         ON_SELL(1, "在售状态");
 
