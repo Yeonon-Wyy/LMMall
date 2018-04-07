@@ -149,7 +149,7 @@ public class ProductManagerController {
      * 上传图片
      */
     @PostMapping("upload")
-    public ServerResponse uploadImage(HttpSession session, HttpServletRequest request,
+    public ServerResponse<Map<String, String>> uploadImage(HttpSession session, HttpServletRequest request,
                             @RequestParam(value = "upload_file", required = false)MultipartFile file) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
@@ -160,13 +160,17 @@ public class ProductManagerController {
             return ServerResponse.createByErrorMessage("没有权限");
         }
 
+        //1.首先需要知道上传文件的路径，这个路径只是一个临时路径，可以直接存储到temp里
         String path = request.getServletContext().getRealPath("upload");
-        String targetFileName = fileService.upload(file, path);
+        //2. 需要知道目标文件名
+        String targetFileName  = fileService.upload(file, path);
+        //3. 构造URL
         String url = coreProperties.getFtp().getHostPrefix() + targetFileName;
 
-        Map<String, String> fileMap = Maps.newHashMap();
-        fileMap.put("uri", targetFileName);
-        fileMap.put("url", url);
-        return ServerResponse.createBySuccess(fileMap);
+        //4. 将url和uri返回给前端
+        Map<String, String> urlMap = Maps.newHashMap();
+        urlMap.put("uri", targetFileName);
+        urlMap.put("url", url);
+        return ServerResponse.createBySuccess("上传文件成功", urlMap);
     }
 }
