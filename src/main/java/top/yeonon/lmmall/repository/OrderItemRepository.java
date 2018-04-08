@@ -1,7 +1,10 @@
 package top.yeonon.lmmall.repository;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import top.yeonon.lmmall.entity.OrderItem;
+
+import java.util.List;
 
 @Mapper
 public interface OrderItemRepository {
@@ -16,4 +19,6 @@ public interface OrderItemRepository {
     int updateByPrimaryKeySelective(OrderItem record);
 
     int updateByPrimaryKey(OrderItem record);
+
+    List<OrderItem> selectOrderItemsByUserIdAndOrderNo(@Param("userId") Integer userId, @Param("orderNo") Long orderNo);
 }

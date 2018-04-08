@@ -1,10 +1,7 @@
 package top.yeonon.lmmall.common;
 
 import com.google.common.collect.Sets;
-import edu.princeton.cs.algs4.SET;
-import org.apache.commons.collections.SetUtils;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
