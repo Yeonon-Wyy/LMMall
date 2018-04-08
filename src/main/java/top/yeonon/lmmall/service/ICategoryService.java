@@ -1,6 +1,9 @@
 package top.yeonon.lmmall.service;
 
 import top.yeonon.lmmall.common.ServerResponse;
+import top.yeonon.lmmall.entity.Category;
+
+import java.util.List;
 
 /**
  * @Author yeonon
@@ -14,7 +17,7 @@ public interface ICategoryService {
 
     ServerResponse updateCategory(Integer categoryId, String categoryName);
 
-    ServerResponse getParallelChildrenCategory(Integer parentId);
+    ServerResponse<List<Category>> getParallelChildrenCategory(Integer parentId);
 
-    ServerResponse getDeepChildrenCategory(Integer categoryId);
+    ServerResponse<List<Integer>> getDeepChildrenCategory(Integer categoryId);
 }

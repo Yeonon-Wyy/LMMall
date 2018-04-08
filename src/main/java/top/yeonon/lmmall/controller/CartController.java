@@ -7,6 +7,7 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.service.ICartService;
+import top.yeonon.lmmall.vo.CartVo;
 
 import javax.servlet.http.HttpSession;
 
@@ -25,7 +26,7 @@ public class CartController {
      *  添加商品到购物车里
      */
     @PostMapping("{productId}")
-    public ServerResponse addProductToCart(HttpSession session, @PathVariable("productId") Integer productId, Integer count) {
+    public ServerResponse<CartVo> addProductToCart(HttpSession session, @PathVariable("productId") Integer productId, Integer count) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
@@ -39,7 +40,7 @@ public class CartController {
      *  更新商品的数量
      */
     @PutMapping("{productId}")
-    public ServerResponse updateProductToCart(HttpSession session, @PathVariable("productId") Integer productId, Integer count) {
+    public ServerResponse<CartVo> updateProductToCart(HttpSession session, @PathVariable("productId") Integer productId, Integer count) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
@@ -52,7 +53,7 @@ public class CartController {
      *  删除商品
      */
     @DeleteMapping("{productIds}")
-    public ServerResponse deleteProductFromCart(HttpSession session, @PathVariable("productIds") String productIds) {
+    public ServerResponse<CartVo> deleteProductFromCart(HttpSession session, @PathVariable("productIds") String productIds) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
@@ -65,7 +66,7 @@ public class CartController {
      *  获取整个购物车列表
      */
     @GetMapping
-    public ServerResponse getLists(HttpSession session) {
+    public ServerResponse<CartVo> getLists(HttpSession session) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
@@ -78,7 +79,7 @@ public class CartController {
      *  全部勾选
      */
     @PostMapping("selectAll")
-    public ServerResponse selectAll(HttpSession session) {
+    public ServerResponse<CartVo> selectAll(HttpSession session) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
@@ -91,7 +92,7 @@ public class CartController {
      * 全部不勾选
      */
     @PostMapping("unSelectAll")
-    public ServerResponse unSelectAll(HttpSession session) {
+    public ServerResponse<CartVo> unSelectAll(HttpSession session) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
@@ -104,7 +105,7 @@ public class CartController {
      *  单选
      */
     @PostMapping("select/{productId}")
-    public ServerResponse SelectProduct(HttpSession session, @PathVariable("productId") Integer productId) {
+    public ServerResponse<CartVo> SelectProduct(HttpSession session, @PathVariable("productId") Integer productId) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
@@ -117,7 +118,7 @@ public class CartController {
      * 单不选
      */
     @PostMapping("unSelect/{productId}")
-    public ServerResponse unSelectProduct(HttpSession session, @PathVariable("productId") Integer productId) {
+    public ServerResponse<CartVo> unSelectProduct(HttpSession session, @PathVariable("productId") Integer productId) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
@@ -130,7 +131,7 @@ public class CartController {
      *  获取购物车中商品的数量
      */
     @GetMapping("totalCount")
-    public ServerResponse getTotalCount(HttpSession session) {
+    public ServerResponse<CartVo> getTotalCount(HttpSession session) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),

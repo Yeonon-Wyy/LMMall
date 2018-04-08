@@ -67,7 +67,7 @@ public class CategoryManagerController {
      * 获取平级（单层）的品类信息
      */
     @GetMapping("parallel/{parentId}")
-    public ServerResponse getParallelChildrenCategory(HttpSession session
+    public ServerResponse<List<Category>> getParallelChildrenCategory(HttpSession session
                                                                       ,@PathVariable("parentId") Integer parentId) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
@@ -91,7 +91,7 @@ public class CategoryManagerController {
      * 同层的不受影响
      */
     @GetMapping("deep/{categoryId}")
-    public ServerResponse getDeepChildrenCategory(HttpSession session, @PathVariable("categoryId") Integer categoryId) {
+    public ServerResponse<List<Integer>> getDeepChildrenCategory(HttpSession session, @PathVariable("categoryId") Integer categoryId) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
         if (user == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");

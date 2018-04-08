@@ -38,7 +38,7 @@ public class CartService implements ICartService {
     private CoreProperties coreProperties;
 
     @Override
-    public ServerResponse addProductToCart(Integer userId, Integer productId, Integer count) {
+    public ServerResponse<CartVo> addProductToCart(Integer userId, Integer productId, Integer count) {
         if (productId == null || userId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
                     "参数错误");
@@ -61,7 +61,7 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public ServerResponse updateProductToCart(Integer userId, Integer productId, Integer count) {
+    public ServerResponse<CartVo> updateProductToCart(Integer userId, Integer productId, Integer count) {
         if (productId == null || userId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
                     "参数错误");
@@ -75,7 +75,7 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public ServerResponse deleteProductFromCart(Integer userId, String productIds) {
+    public ServerResponse<CartVo> deleteProductFromCart(Integer userId, String productIds) {
         if (userId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
                     "参数错误");
@@ -87,12 +87,12 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public ServerResponse getLists(Integer userId) {
+    public ServerResponse<CartVo> getLists(Integer userId) {
         return getCartVoLimit(userId);
     }
 
     @Override
-    public ServerResponse selectOrUnSelect(Integer userId, Integer productId, Integer checked) {
+    public ServerResponse<CartVo> selectOrUnSelect(Integer userId, Integer productId, Integer checked) {
         if (userId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
                     "参数错误");
@@ -119,7 +119,7 @@ public class CartService implements ICartService {
      * 所以，在本项目中Cart就可以理解为是表示商品和用户的关系的类，同样，在数据库中，cart表也仅仅包含了表示关系的简单字段
      * 最后，CartVo对象就包含这三个商品的List，并且包含了商品的详细信息，这个对象是通过构造得到的，专门返回给前端展示的，真实在数据库中的数据并没有那么丰富。
      */
-    private ServerResponse getCartVoLimit(Integer userId) {
+    private ServerResponse<CartVo> getCartVoLimit(Integer userId) {
         //CartVo 是最终要返回的对象
         CartVo cartVo = new CartVo();
         List<Cart> cartList = cartRepository.selectCartsByUserId(userId);

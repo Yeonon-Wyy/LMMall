@@ -71,7 +71,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public ServerResponse getParallelChildrenCategory(Integer parentId) {
+    public ServerResponse<List<Category>> getParallelChildrenCategory(Integer parentId) {
         if (parentId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
                     "参数错误!parentId不能为空");
@@ -86,7 +86,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public ServerResponse getDeepChildrenCategory(Integer categoryId) {
+    public ServerResponse<List<Integer>> getDeepChildrenCategory(Integer categoryId) {
         if (categoryId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
                     "参数错误!categoryId不能为空");

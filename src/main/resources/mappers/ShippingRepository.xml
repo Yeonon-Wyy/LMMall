@@ -155,9 +155,7 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null">
         update_time = now(),
-      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -176,4 +174,26 @@
       update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <delete id="deleteShippingByUserIdAndShippingId" parameterType="map" >
+    DELETE
+    FROM lmmall_shipping
+    WHERE user_id = #{userId}
+    AND id = #{shippingId}
+  </delete>
+
+  <select id="selectShippingByIdAndUserId" parameterType="map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_shipping
+    WHERE user_id = #{userId}
+    AND id=#{shippingId}
+  </select>
+
+  <select id="selectShippingListByUserId" parameterType="int" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_shipping
+    WHERE user_id = #{userId}
+  </select>
 </mapper>

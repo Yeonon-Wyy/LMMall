@@ -2,6 +2,7 @@ package top.yeonon.lmmall.service;
 
 import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
+import top.yeonon.lmmall.vo.CartVo;
 
 /**
  * @Author yeonon
@@ -9,15 +10,15 @@ import top.yeonon.lmmall.common.ServerResponse;
  **/
 public interface ICartService {
 
-    ServerResponse addProductToCart(Integer userId, Integer productId, Integer count);
+    ServerResponse<CartVo> addProductToCart(Integer userId, Integer productId, Integer count);
 
-    ServerResponse updateProductToCart(Integer userId, Integer productId, Integer count);
+    ServerResponse<CartVo> updateProductToCart(Integer userId, Integer productId, Integer count);
 
-    ServerResponse deleteProductFromCart(Integer userId, String productIds);
+    ServerResponse<CartVo> deleteProductFromCart(Integer userId, String productIds);
 
-    ServerResponse getLists(Integer userId);
+    ServerResponse<CartVo> getLists(Integer userId);
 
-    ServerResponse selectOrUnSelect(Integer userId, Integer productId, Integer checked);
+    ServerResponse<CartVo> selectOrUnSelect(Integer userId, Integer productId, Integer checked);
 
-    ServerResponse getTotalCount(Integer userId);
+    ServerResponse<CartVo> getTotalCount(Integer userId);
 }
