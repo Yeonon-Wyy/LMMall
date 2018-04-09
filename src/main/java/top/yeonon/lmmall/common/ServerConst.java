@@ -19,6 +19,11 @@ public interface ServerConst {
     String FORGET_PASSWORD_TOKEN_KEY = "FORGET_PASSWORD_TOKEN_KEY:";
 
 
+    /**
+     * 支付宝默认回调地址
+     */
+    String DEFAULT_ALIPAY_CALLBACK_ADDRESS = "http://www.lmmall.com/alipay_callback";
+
     interface ProductOrderBy {
         Set<String> ORDER_BY_PRICE = Sets.newHashSet("price_asc","price_desc");
         Set<String> ORDER_BY_NAME = Sets.newHashSet("name_asc","name_desc");
@@ -30,6 +35,59 @@ public interface ServerConst {
 
         String LIMIT_NUMBER_SUCCESS = "LIMIT_NUMBER_SUCCESS";
         String LIMIT_NUMBER_FAIL = "LIMIT_NUMBER_FAIL";
+    }
+
+    interface AlipayCallback {
+        String TRADE_STATUS_WAIT_BUYER_PAY = "WAIT_BUYER_PAY";
+        String TRADE_STATUS_TRADE_SUCCESS = "TRADE_SUCCESS";
+
+        String RESPONSE_SUCCESS = "success";
+        String RESPONSE_FAILED = "failed";
+    }
+
+    enum PayPlatform {
+        ALIPY(0, "支付宝");
+
+        private int code;
+        private String desc;
+
+        PayPlatform(int code, String desc){
+            this.code = code;
+            this.desc = desc;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+    }
+
+    enum OrderStatus {
+        CANCELED(0, "已取消"),
+        NO_PAY(10, "未支付"),
+        PAID(20, "已付款"),
+        SHIPPED(40, "已发货"),
+        ORDER_SUCCESS(50, "订单完成"),
+        ORDER_CLOSE(60, "订单关闭");
+
+        private int code;
+        private String desc;
+
+        OrderStatus(int code, String desc){
+            this.code = code;
+            this.desc = desc;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
     }
 
     enum ProductStatus {

@@ -14,13 +14,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.java.Log;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.Order;
 import top.yeonon.lmmall.entity.OrderItem;
+import top.yeonon.lmmall.entity.PayInfo;
 import top.yeonon.lmmall.properties.CoreProperties;
 import top.yeonon.lmmall.repository.OrderItemRepository;
 import top.yeonon.lmmall.repository.OrderRepository;
@@ -29,6 +32,8 @@ import top.yeonon.lmmall.utils.BigDecimalUtil;
 import top.yeonon.lmmall.utils.FTPUtil;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -115,7 +120,7 @@ public class OrderService implements IOrderService {
                 .setUndiscountableAmount(undiscountableAmount).setSellerId(sellerId).setBody(body)
                 .setOperatorId(operatorId).setStoreId(storeId).setExtendParams(extendParams)
                 .setTimeoutExpress(timeoutExpress)
-                //                .setNotifyUrl("http://www.test-notify-url.com")//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
+                .setNotifyUrl(coreProperties.getAlipay().getCallbackAddress())//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
                 .setGoodsDetailList(goodsDetailList);
 
         Configs.init("zfbinfo.properties");
@@ -158,6 +163,51 @@ public class OrderService implements IOrderService {
                 log.error("不支持的交易状态，交易返回异常!!!");
                 return ServerResponse.createByErrorMessage("不支持的交易状态，交易返回异常!!!");
         }
+    }
+
+    @Override
+    public ServerResponse alipayCallcack(Map<String, String> params) {
+        Long orderNo = Long.parseLong(params.get("out_trade_no"));
+        String tradeNo = params.get("trade_no");
+        String tradeStatus = params.get("trade_status");
+
+        Order order = orderRepository.selectOrderByOrderNo(orderNo);
+        if (order == null) {
+            return ServerResponse.createByErrorMessage("不是路漫商城的订单！");
+        }
+        if (order.getStatus() >= ServerConst.OrderStatus.PAID.getCode()) {
+            return ServerResponse.createBySuccessMessage("支付宝重复调用");
+        }
+
+        if (ServerConst.AlipayCallback.TRADE_STATUS_TRADE_SUCCESS.equals(tradeStatus)) {
+            try {
+                order.setPaymentTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(params.get("gmt_payment")));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            order.setStatus(ServerConst.OrderStatus.PAID.getCode());
+        }
+
+        PayInfo payInfo = new PayInfo();
+        payInfo.setUserId(order.getUserId());
+        payInfo.setOrderNo(orderNo);
+        payInfo.setPayPlatform(ServerConst.PayPlatform.ALIPY.getCode());
+        payInfo.setPlatformNumber(tradeNo);
+        payInfo.setPlatformStatus(tradeStatus);
+
+        return ServerResponse.createBySuccess();
+    }
+
+    @Override
+    public ServerResponse queryOrderPayStatus(Integer userId, Long orderNo) {
+        Order order = orderRepository.selectOrderByUserIdAndOrderNo(userId, orderNo);
+        if (order == null) {
+            return ServerResponse.createByErrorMessage("不存在该订单");
+        }
+        if (order.getStatus() >= ServerConst.OrderStatus.PAID.getCode()) {
+            return ServerResponse.createBySuccess();
+        }
+        return ServerResponse.createByError();
     }
 
     private void dumpResponse(AlipayResponse response) {

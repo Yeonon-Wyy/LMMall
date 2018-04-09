@@ -17,4 +17,6 @@ public class CoreProperties {
     private SecurityProperties security = new SecurityProperties();
 
     private FtpProperties ftp = new FtpProperties();
+
+    private AlipayProperties alipay = new AlipayProperties();
 }

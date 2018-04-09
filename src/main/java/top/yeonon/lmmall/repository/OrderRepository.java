@@ -19,4 +19,7 @@ public interface OrderRepository {
     int updateByPrimaryKey(Order record);
 
     Order selectOrderByUserIdAndOrderNo(@Param("userId") Integer userId, @Param("orderNo") Long orderNo);
+
+    Order selectOrderByOrderNo(Long orderNo);
+
 }

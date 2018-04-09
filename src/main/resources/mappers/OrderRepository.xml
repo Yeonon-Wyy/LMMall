@@ -204,4 +204,11 @@
     WHERE user_id=#{userId}
     AND order_no=#{orderNo}
   </select>
+
+  <select id="selectOrderByOrderNo" resultMap="BaseResultMap" parameterType="long">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_order
+    WHERE order_no=#{orderNo}
+  </select>
 </mapper>
