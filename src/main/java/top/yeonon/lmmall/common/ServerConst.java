@@ -22,7 +22,7 @@ public interface ServerConst {
     /**
      * 支付宝默认回调地址
      */
-    String DEFAULT_ALIPAY_CALLBACK_ADDRESS = "http://www.lmmall.com/alipay_callback";
+    String DEFAULT_ALIPAY_CALLBACK_ADDRESS = "http://www.lmmall.com/order/alipay_callback";
 
     interface ProductOrderBy {
         Set<String> ORDER_BY_PRICE = Sets.newHashSet("price_asc","price_desc");
@@ -87,6 +87,15 @@ public interface ServerConst {
 
         public String getDesc() {
             return desc;
+        }
+
+        public static OrderStatus codeOf(int code) {
+            for (OrderStatus orderStatus : values()) {
+                if (orderStatus.getCode() == code) {
+                    return orderStatus;
+                }
+            }
+            throw new RuntimeException("没有找到对应的订单状态");
         }
     }
 

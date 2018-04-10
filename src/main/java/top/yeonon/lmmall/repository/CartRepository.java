@@ -3,6 +3,7 @@ package top.yeonon.lmmall.repository;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.yeonon.lmmall.entity.Cart;
+import top.yeonon.lmmall.entity.OrderItem;
 
 import java.util.List;
 
@@ -31,4 +32,8 @@ public interface CartRepository {
     int checkOrUnCheckedCart(@Param("userId") Integer userId, @Param("productId") Integer productId, @Param("checked") Integer checked);
 
     int selectTotalCount(Integer userId);
+
+    List<Cart> selectCheckedCartsByUserId(Integer userId);
+
+
 }

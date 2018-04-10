@@ -1,8 +1,11 @@
 package top.yeonon.lmmall.repository;
 
+import com.sun.org.apache.xpath.internal.operations.Or;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.yeonon.lmmall.entity.Order;
+
+import java.util.List;
 
 @Mapper
 public interface OrderRepository {
@@ -21,5 +24,9 @@ public interface OrderRepository {
     Order selectOrderByUserIdAndOrderNo(@Param("userId") Integer userId, @Param("orderNo") Long orderNo);
 
     Order selectOrderByOrderNo(Long orderNo);
+
+    List<Order> selectOrdersByUserId(Integer userId);
+
+    List<Order> selectAllOrders();
 
 }

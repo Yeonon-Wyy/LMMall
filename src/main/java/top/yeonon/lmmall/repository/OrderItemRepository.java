@@ -2,6 +2,7 @@ package top.yeonon.lmmall.repository;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import top.yeonon.lmmall.entity.Order;
 import top.yeonon.lmmall.entity.OrderItem;
 
 import java.util.List;
@@ -21,4 +22,12 @@ public interface OrderItemRepository {
     int updateByPrimaryKey(OrderItem record);
 
     List<OrderItem> selectOrderItemsByUserIdAndOrderNo(@Param("userId") Integer userId, @Param("orderNo") Long orderNo);
+
+    List<OrderItem> selectOrderItemsByOrderNo(Long orderNo);
+
+    int batchInsert(@Param("orderItemList") List<OrderItem> orderItemList);
+
+
+
 }
+

@@ -211,4 +211,19 @@
     FROM lmmall_order
     WHERE order_no=#{orderNo}
   </select>
+
+  <select id="selectOrdersByUserId" parameterType="int" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_order
+    WHERE user_id=#{userId}
+    ORDER BY create_time desc
+  </select>
+
+  <select id="selectAllOrders" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_order
+    ORDER BY create_time desc
+  </select>
 </mapper>

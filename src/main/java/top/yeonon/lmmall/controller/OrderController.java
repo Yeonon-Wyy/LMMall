@@ -3,6 +3,7 @@ package top.yeonon.lmmall.controller;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.demo.trade.config.Configs;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import lombok.extern.java.Log;
 import org.slf4j.Logger;
@@ -14,9 +15,11 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.service.IOrderService;
+import top.yeonon.lmmall.vo.OrderVo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -33,6 +36,58 @@ public class OrderController {
     @Autowired
     private IOrderService orderService;
 
+
+    @PostMapping
+    public ServerResponse createOrder(HttpSession session, Integer shippingId) {
+        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        if (user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
+                    "用户需要登录！");
+        }
+        return orderService.createOrder(user.getId(), shippingId);
+    }
+
+    @DeleteMapping("{orderNo}")
+    public ServerResponse deleteOrder(HttpSession session, @PathVariable("orderNo") Long orderNo) {
+        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        if (user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
+                    "用户需要登录！");
+        }
+        return orderService.deleteOrder(user.getId(), orderNo);
+    }
+
+    @GetMapping("order_cart_product")
+    public ServerResponse getOrderCartProduct(HttpSession session) {
+        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        if (user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
+                    "用户需要登录！");
+        }
+        return orderService.getOrderCartProduct(user.getId());
+    }
+
+    @GetMapping
+    public ServerResponse<PageInfo> getOrders(HttpSession session, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                                              @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        if (user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
+                    "用户需要登录！");
+        }
+        return orderService.getOrders(user.getId(), pageNum, pageSize);
+    }
+
+    @GetMapping("{orderNo}")
+    public ServerResponse<OrderVo> getDetails(HttpSession session, @PathVariable("orderNo") Long orderNo) {
+        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        if (user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
+                    "用户需要登录！");
+        }
+        return orderService.getDetails(user.getId(), orderNo);
+    }
+
     @PostMapping("{orderNo}/pay")
     public ServerResponse pay(HttpSession session, @PathVariable("orderNo") Long orderNo, HttpServletRequest request) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
@@ -44,25 +99,25 @@ public class OrderController {
         return orderService.pay(user.getId(), orderNo, path);
     }
 
-    @GetMapping("alipay_callback")
+    @PostMapping("alipay_callback")
     public Object alipayCallback(HttpServletRequest request) {
         Map<String, String> params = Maps.newHashMap();
         Map requestParam = request.getParameterMap();
-        for (Object object : requestParam.keySet()) {
-            String name = (String) object;
+        for (Iterator iter = requestParam.keySet().iterator(); iter.hasNext();) {
+            String name = (String) iter.next();
             String[] values = (String[]) requestParam.get(name);
-            String valueStr = "";
+            String valStr = "";
             for (int i = 0; i < values.length; i++) {
-                valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+                valStr = (i == values.length - 1) ? valStr + values[i] : valStr + values[i] + ",";
             }
-            params.put(name, valueStr);
+            params.put(name, valStr);
         }
         logger.info("支付宝回调, sign{}, trade_status{}, 参数{}", params.get("sign"), params.get("trade_status"), params.toString());
         //验签前得删除参数里的sign和sign_type参数，sign在支付宝SDK里删除里，所以在这里得手动删除sign_type
         params.remove("sign_type");
 
         try {
-            boolean alipayRSACheckV2 = AlipaySignature.rsaCheckV2(params, Configs.getPublicKey(), "utf-8", Configs.getSignType());
+            boolean alipayRSACheckV2 = AlipaySignature.rsaCheckV2(params, Configs.getAlipayPublicKey(), "utf-8", Configs.getSignType());
             if (!alipayRSACheckV2) {
                 return ServerResponse.createByErrorMessage("非法请求！");
             }

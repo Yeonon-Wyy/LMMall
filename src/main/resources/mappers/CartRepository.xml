@@ -166,4 +166,13 @@
     FROM lmmall_cart
     WHERE user_id=#{userId}
   </select>
+
+  <select id="selectCheckedCartsByUserId" parameterType="int" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_cart
+    WHERE user_id = #{userId}
+    AND checked=1
+  </select>
+
 </mapper>
