@@ -8,6 +8,7 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.interceptor.authenticationAnnotation.Manager;
+import top.yeonon.lmmall.properties.CoreProperties;
 import top.yeonon.lmmall.service.ISessionService;
 import top.yeonon.lmmall.service.IUserService;
 import top.yeonon.lmmall.token.TokenGenerator;
@@ -38,6 +39,9 @@ public class SessionManagerController {
     @Autowired
     private TokenGenerator<String> jwtTokenGenerator;
 
+    @Autowired
+    private CoreProperties coreProperties;
+
     @PostMapping
     public ServerResponse<User> login(HttpServletResponse response, String username, String password) {
         ServerResponse<User> serverResponse = sessionService.login(username, password);
@@ -52,8 +56,9 @@ public class SessionManagerController {
                     log.info("生成jwt失败");
                     return ServerResponse.createByErrorMessage("登录失败");
                 }
-                redisTemplate.opsForValue().set(token, serverResponse.getData(), 30, TimeUnit.MINUTES);
-                response.setHeader("lmmall_login_token", token);
+                redisTemplate.opsForValue().set(token, serverResponse.getData(),
+                        coreProperties.getSecurity().getTokenExpire(), TimeUnit.MINUTES);
+                response.setHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME, token);
             }
             else {
                 return ServerResponse.createByErrorMessage("不是管理员");

@@ -11,4 +11,9 @@ import lombok.Setter;
 @Setter
 public class SecurityProperties {
     private String md5Salt = PropertiesConst.MD5_SALT;
+
+    private String jwtSecret = "lmmall_secret";
+
+    private int tokenExpire = 30;
+
 }

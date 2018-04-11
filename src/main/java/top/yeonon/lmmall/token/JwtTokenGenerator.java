@@ -4,11 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.collect.Maps;
 import org.springframework.stereotype.Component;
+import top.yeonon.lmmall.properties.CoreProperties;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -20,13 +19,15 @@ import java.util.Map;
 @Component
 public class JwtTokenGenerator implements TokenGenerator<String> {
 
-    private static final String SECRET = "LMMall_JWT_TOKEN_SECRET";
+    private static final CoreProperties coreProperties = new CoreProperties();
+
+    private static final String SECRET = coreProperties.getSecurity().getJwtSecret();
 
     @Override
     public String generate(String authorization) throws Exception {
         Date iatDate = new Date();
         Calendar nowTime = Calendar.getInstance();
-        nowTime.add(Calendar.MINUTE, 30);
+        nowTime.add(Calendar.MINUTE, coreProperties.getSecurity().getTokenExpire());
         Date expireTime = nowTime.getTime();
 
         Map<String, Object> map = Maps.newHashMap();
@@ -52,4 +53,5 @@ public class JwtTokenGenerator implements TokenGenerator<String> {
         }
         return true;
     }
+
 }

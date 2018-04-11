@@ -8,6 +8,7 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.interceptor.authenticationAnnotation.Consumer;
+import top.yeonon.lmmall.properties.CoreProperties;
 import top.yeonon.lmmall.service.ISessionService;
 import top.yeonon.lmmall.token.TokenGenerator;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,9 @@ public class SessionController {
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
+    @Autowired
+    private CoreProperties coreProperties;
+
     /**
      * 登录接口
      */
@@ -46,8 +50,9 @@ public class SessionController {
                 log.info("生成jwt失败");
                 return ServerResponse.createByErrorMessage("登录失败");
             }
-            redisTemplate.opsForValue().set(token, serverResponse.getData(), 30, TimeUnit.MINUTES);
-            response.setHeader("lmmall_login_token", token);
+            redisTemplate.opsForValue().set(token, serverResponse.getData(),
+                    coreProperties.getSecurity().getTokenExpire(), TimeUnit.MINUTES);
+            response.setHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME, token);
         }
         return serverResponse;
     }

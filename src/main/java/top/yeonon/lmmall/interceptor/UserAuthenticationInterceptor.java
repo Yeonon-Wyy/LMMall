@@ -20,7 +20,6 @@ import top.yeonon.lmmall.token.TokenGenerator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
@@ -95,16 +94,8 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     }
 
     private boolean isManager(HttpServletRequest request) {
-
         String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        if (StringUtils.isEmpty(token)) {
-            return false;
-        }
-
-        try {
-            jwtTokenGenerator.verifyToken(token);
-        } catch (Exception e) {
-            log.info("token过期或者解密失败");
+        if (!verfiy(token)) {
             return false;
         }
         User user = (User) redisTemplate.opsForValue().get(token);
@@ -121,6 +112,18 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
 
     private boolean isConsumer(HttpServletRequest request) {
         String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        if (!verfiy(token)) {
+            return false;
+        }
+        User user = (User) redisTemplate.opsForValue().get(token);
+        if (user == null) {
+            return false;
+        }
+        return true;
+    }
+
+
+    private boolean verfiy(String token) {
         if (StringUtils.isEmpty(token)) {
             return false;
         }
@@ -128,10 +131,6 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
             jwtTokenGenerator.verifyToken(token);
         } catch (Exception e) {
             log.info("token过期或者解密失败");
-            return false;
-        }
-        User user = (User) redisTemplate.opsForValue().get(token);
-        if (user == null) {
             return false;
         }
         return true;
