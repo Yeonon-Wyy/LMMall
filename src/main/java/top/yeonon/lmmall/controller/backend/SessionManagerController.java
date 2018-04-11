@@ -1,13 +1,11 @@
 package top.yeonon.lmmall.controller.backend;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
+import top.yeonon.lmmall.interceptor.authenticationAnnotation.Manager;
 import top.yeonon.lmmall.service.ISessionService;
 import top.yeonon.lmmall.service.IUserService;
 
@@ -40,6 +38,13 @@ public class SessionManagerController {
             return ServerResponse.createByErrorMessage("不是管理员");
         }
         return serverResponse;
+    }
+
+    @DeleteMapping
+    @Manager
+    public ServerResponse logout(HttpSession session) {
+        session.removeAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        return ServerResponse.createBySuccessMessage("管理员登出成功");
     }
 
 }

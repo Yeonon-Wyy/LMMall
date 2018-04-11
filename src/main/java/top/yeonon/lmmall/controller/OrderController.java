@@ -14,6 +14,7 @@ import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
+import top.yeonon.lmmall.interceptor.authenticationAnnotation.Consumer;
 import top.yeonon.lmmall.service.IOrderService;
 import top.yeonon.lmmall.vo.OrderVo;
 
@@ -38,63 +39,45 @@ public class OrderController {
 
 
     @PostMapping
+    @Consumer
     public ServerResponse createOrder(HttpSession session, Integer shippingId) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         return orderService.createOrder(user.getId(), shippingId);
     }
 
     @DeleteMapping("{orderNo}")
+    @Consumer
     public ServerResponse deleteOrder(HttpSession session, @PathVariable("orderNo") Long orderNo) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         return orderService.deleteOrder(user.getId(), orderNo);
     }
 
     @GetMapping("order_cart_product")
+    @Consumer
     public ServerResponse getOrderCartProduct(HttpSession session) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         return orderService.getOrderCartProduct(user.getId());
     }
 
     @GetMapping
+    @Consumer
     public ServerResponse<PageInfo> getOrders(HttpSession session, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                               @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         return orderService.getOrders(user.getId(), pageNum, pageSize);
     }
 
     @GetMapping("{orderNo}")
+    @Consumer
     public ServerResponse<OrderVo> getDetails(HttpSession session, @PathVariable("orderNo") Long orderNo) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         return orderService.getDetails(user.getId(), orderNo);
     }
 
     @PostMapping("{orderNo}/pay")
+    @Consumer
     public ServerResponse pay(HttpSession session, @PathVariable("orderNo") Long orderNo, HttpServletRequest request) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         String path = request.getServletContext().getRealPath("upload");
         return orderService.pay(user.getId(), orderNo, path);
     }
@@ -133,13 +116,9 @@ public class OrderController {
     }
 
     @GetMapping("{orderNo}/pay_status")
+    @Consumer
     public ServerResponse queryOrderPayStatus(HttpSession session, @PathVariable("orderNo") Long orderNo) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
-
         ServerResponse response = orderService.queryOrderPayStatus(user.getId(), orderNo);
         if (response.isSuccess()) {
             return ServerResponse.createBySuccess(true);

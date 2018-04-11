@@ -10,6 +10,7 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.Product;
 import top.yeonon.lmmall.entity.User;
+import top.yeonon.lmmall.interceptor.authenticationAnnotation.Manager;
 import top.yeonon.lmmall.properties.CoreProperties;
 import top.yeonon.lmmall.service.IFileService;
 import top.yeonon.lmmall.service.IProductService;
@@ -44,17 +45,9 @@ public class ProductManagerController {
      * 获取所有商品，不需要排序和关键字（就是所有，就是那么暴力！）
      */
     @GetMapping
-    public ServerResponse<PageInfo> getManageProducts(HttpSession session,
-                                                @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+    @Manager
+    public ServerResponse<PageInfo> getManageProducts(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                                 @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
         return productService.getManageProducts(pageNum, pageSize);
     }
 
@@ -62,15 +55,8 @@ public class ProductManagerController {
      * 添加商品
      */
     @PostMapping
-    public ServerResponse addProduct(HttpSession session, Product product) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
+    @Manager
+    public ServerResponse addProduct(Product product) {
         return productService.addOrUpdateProduct(product);
     }
 
@@ -78,15 +64,8 @@ public class ProductManagerController {
      * 更新商品信息
      */
     @PutMapping("{productId}")
-    public ServerResponse updateProduct(HttpSession session, @PathVariable("productId") Integer productId, Product product) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
+    @Manager
+    public ServerResponse updateProduct(@PathVariable("productId") Integer productId, Product product) {
         if (product != null) {
             product.setId(productId);
         }
@@ -97,18 +76,10 @@ public class ProductManagerController {
      * 商品搜索
      */
     @GetMapping("search")
-    public ServerResponse<PageInfo> search(HttpSession session,
-                                 String productName, Integer productId,
+    @Manager
+    public ServerResponse<PageInfo> search(String productName, Integer productId,
                                  @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                  @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
         return productService.search(productName, productId, pageNum, pageSize);
     }
 
@@ -116,15 +87,8 @@ public class ProductManagerController {
      * 获取商品详情（未上架的也可以获取到）
      */
     @GetMapping("{productId}")
-    public ServerResponse<ProductDetailsVo> getManageProductDetails(HttpSession session, @PathVariable("productId") Integer productId) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
+    @Manager
+    public ServerResponse<ProductDetailsVo> getManageProductDetails(@PathVariable("productId") Integer productId) {
 
         return productService.getManageProductDetails(productId);
     }
@@ -133,15 +97,8 @@ public class ProductManagerController {
      * 商品上下架
      */
     @PutMapping("{productId}/status")
-    public ServerResponse updateProductStatus(HttpSession session, @PathVariable("productId") Integer productId, Integer status) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
+    @Manager
+    public ServerResponse updateProductStatus(@PathVariable("productId") Integer productId, Integer status) {
         return productService.updateProductStatus(productId, status);
     }
 
@@ -149,16 +106,9 @@ public class ProductManagerController {
      * 上传图片
      */
     @PostMapping("upload")
-    public ServerResponse<Map<String, String>> uploadImage(HttpSession session, HttpServletRequest request,
+    @Manager
+    public ServerResponse<Map<String, String>> uploadImage(HttpServletRequest request,
                             @RequestParam(value = "upload_file", required = false)MultipartFile file) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
 
         //1.首先需要知道上传文件的路径，这个路径只是一个临时路径，可以直接存储到temp里
         String path = request.getServletContext().getRealPath("upload");

@@ -7,6 +7,7 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.Category;
 import top.yeonon.lmmall.entity.User;
+import top.yeonon.lmmall.interceptor.authenticationAnnotation.Manager;
 import top.yeonon.lmmall.service.ICategoryService;
 import top.yeonon.lmmall.service.IUserService;
 
@@ -32,16 +33,9 @@ public class CategoryManagerController {
      * @return
      */
     @PostMapping
-    public ServerResponse addCategory(HttpSession session, @RequestParam(value = "parentId", defaultValue = "0") Integer parentId,
+    @Manager
+    public ServerResponse addCategory(@RequestParam(value = "parentId", defaultValue = "0") Integer parentId,
                                       String categoryName) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
         return categoryService.addCategory(parentId, categoryName);
     }
 
@@ -49,16 +43,10 @@ public class CategoryManagerController {
      * 更新品类名称
      */
     @PutMapping("/{id}")
-    public ServerResponse updateCategory(HttpSession session, @PathVariable("id") Integer categoryId,
+    @Manager
+    public ServerResponse updateCategory(@PathVariable("id") Integer categoryId,
                                          String categoryName) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
+
 
         return categoryService.updateCategory(categoryId, categoryName);
     }
@@ -67,16 +55,8 @@ public class CategoryManagerController {
      * 获取平级（单层）的品类信息
      */
     @GetMapping("parallel/{parentId}")
-    public ServerResponse<List<Category>> getParallelChildrenCategory(HttpSession session
-                                                                      ,@PathVariable("parentId") Integer parentId) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
+    @Manager
+    public ServerResponse<List<Category>> getParallelChildrenCategory(@PathVariable("parentId") Integer parentId) {
         return categoryService.getParallelChildrenCategory(parentId);
     }
 
@@ -91,15 +71,8 @@ public class CategoryManagerController {
      * 同层的不受影响
      */
     @GetMapping("deep/{categoryId}")
-    public ServerResponse<List<Integer>> getDeepChildrenCategory(HttpSession session, @PathVariable("categoryId") Integer categoryId) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
+    @Manager
+    public ServerResponse<List<Integer>> getDeepChildrenCategory(@PathVariable("categoryId") Integer categoryId) {
         return categoryService.getDeepChildrenCategory(categoryId);
     }
 

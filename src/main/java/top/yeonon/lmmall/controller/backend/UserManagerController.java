@@ -6,6 +6,7 @@ import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
+import top.yeonon.lmmall.interceptor.authenticationAnnotation.Manager;
 import top.yeonon.lmmall.service.IUserService;
 
 import javax.servlet.http.HttpSession;
@@ -27,28 +28,15 @@ public class UserManagerController {
      * Ps：这里先这样写是为了把业务逻辑先写，后面会抽离出来单独作为一个项目
      */
     @GetMapping
+    @Manager
     public ServerResponse<List<User>> getUserList(HttpSession session) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
         return userService.getUserList();
     }
 
     @DeleteMapping("/{id}")
+    @Manager
     public ServerResponse deleteUser(HttpSession session, @PathVariable("id") Integer id) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "需要登录管理员账号");
-        }
-        ServerResponse checkResponse = userService.checkAdminRole(user);
-        if (!checkResponse.isSuccess()) {
-            return ServerResponse.createByErrorMessage("没有权限");
-        }
         if (user.getId().equals(id)) {
             return ServerResponse.createByErrorMessage("不要自杀！");
         }

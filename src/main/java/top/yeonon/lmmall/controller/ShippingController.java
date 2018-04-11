@@ -8,6 +8,7 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.Shipping;
 import top.yeonon.lmmall.entity.User;
+import top.yeonon.lmmall.interceptor.authenticationAnnotation.Consumer;
 import top.yeonon.lmmall.service.IShippingService;
 
 import javax.servlet.http.HttpSession;
@@ -30,12 +31,9 @@ public class ShippingController {
      * 添加收货地址
      */
     @PostMapping
+    @Consumer
     public ServerResponse addShipping(HttpSession session, Shipping shipping) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         return shippingService.addShipping(user.getId(), shipping);
     }
 
@@ -43,12 +41,9 @@ public class ShippingController {
      * 删除收货地址
      */
     @DeleteMapping("{shippingId}")
+    @Consumer
     public ServerResponse deleteShipping(HttpSession session, @PathVariable("shippingId") Integer shippingId) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         return shippingService.deleteShipping(user.getId(), shippingId);
     }
 
@@ -56,12 +51,9 @@ public class ShippingController {
      *  更新某个收货地址
      */
     @PutMapping("{shippingId}")
+    @Consumer
     public ServerResponse updateShipping(HttpSession session, @PathVariable("shippingId") Integer shippingId, Shipping shipping) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         shipping.setId(shippingId);
         return shippingService.updateShipping(user.getId(), shipping);
     }
@@ -70,12 +62,9 @@ public class ShippingController {
      * 选择查看某个收货地址
      */
     @GetMapping("{shippingId}")
+    @Consumer
     public ServerResponse<Shipping> selectShipping(HttpSession session, @PathVariable("shippingId") Integer shippingId) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         return shippingService.selectShipping(user.getId(), shippingId);
     }
 
@@ -83,14 +72,11 @@ public class ShippingController {
      * 获取收货地址列表
      */
     @GetMapping
+    @Consumer
     public ServerResponse<PageInfo> getShippingList(HttpSession session,
                                                     @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                                     @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-        if (user == null) {
-            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),
-                    "用户需要登录！");
-        }
         return shippingService.getShippingList(user.getId(), pageNum, pageSize);
     }
 }
