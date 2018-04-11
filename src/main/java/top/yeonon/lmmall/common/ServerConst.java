@@ -18,6 +18,11 @@ public interface ServerConst {
 
     String FORGET_PASSWORD_TOKEN_KEY = "FORGET_PASSWORD_TOKEN_KEY:";
 
+    /**
+     * 登录TOKEN的名称
+     */
+    String LMMALL_LOGIN_TOKEN_NAME = "login-token";
+
 
     /**
      * 支付宝默认回调地址

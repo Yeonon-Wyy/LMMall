@@ -22,9 +22,6 @@ import javax.servlet.http.HttpSession;
 public class OrderManagerController {
 
     @Autowired
-    private IUserService userService;
-
-    @Autowired
     private IOrderService orderService;
 
     @GetMapping

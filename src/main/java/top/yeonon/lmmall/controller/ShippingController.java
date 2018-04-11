@@ -2,6 +2,7 @@ package top.yeonon.lmmall.controller;
 
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
@@ -11,6 +12,7 @@ import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.interceptor.authenticationAnnotation.Consumer;
 import top.yeonon.lmmall.service.IShippingService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -27,13 +29,16 @@ public class ShippingController {
     @Autowired
     private IShippingService shippingService;
 
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
+
     /**
      * 添加收货地址
      */
     @PostMapping
     @Consumer
-    public ServerResponse addShipping(HttpSession session, Shipping shipping) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse addShipping(HttpServletRequest request, Shipping shipping) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         return shippingService.addShipping(user.getId(), shipping);
     }
 
@@ -42,8 +47,8 @@ public class ShippingController {
      */
     @DeleteMapping("{shippingId}")
     @Consumer
-    public ServerResponse deleteShipping(HttpSession session, @PathVariable("shippingId") Integer shippingId) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse deleteShipping(HttpServletRequest request, @PathVariable("shippingId") Integer shippingId) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         return shippingService.deleteShipping(user.getId(), shippingId);
     }
 
@@ -52,8 +57,8 @@ public class ShippingController {
      */
     @PutMapping("{shippingId}")
     @Consumer
-    public ServerResponse updateShipping(HttpSession session, @PathVariable("shippingId") Integer shippingId, Shipping shipping) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse updateShipping(HttpServletRequest request, @PathVariable("shippingId") Integer shippingId, Shipping shipping) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         shipping.setId(shippingId);
         return shippingService.updateShipping(user.getId(), shipping);
     }
@@ -63,8 +68,8 @@ public class ShippingController {
      */
     @GetMapping("{shippingId}")
     @Consumer
-    public ServerResponse<Shipping> selectShipping(HttpSession session, @PathVariable("shippingId") Integer shippingId) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse<Shipping> selectShipping(HttpServletRequest request, @PathVariable("shippingId") Integer shippingId) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         return shippingService.selectShipping(user.getId(), shippingId);
     }
 
@@ -73,10 +78,10 @@ public class ShippingController {
      */
     @GetMapping
     @Consumer
-    public ServerResponse<PageInfo> getShippingList(HttpSession session,
+    public ServerResponse<PageInfo> getShippingList(HttpServletRequest request,
                                                     @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                                     @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         return shippingService.getShippingList(user.getId(), pageNum, pageSize);
     }
 }

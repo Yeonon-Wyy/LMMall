@@ -2,7 +2,9 @@ package top.yeonon.lmmall.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.java.Log;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -14,6 +16,7 @@ import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.interceptor.authenticationAnnotation.Consumer;
 import top.yeonon.lmmall.interceptor.authenticationAnnotation.Manager;
 import top.yeonon.lmmall.service.IUserService;
+import top.yeonon.lmmall.token.TokenGenerator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,13 +41,18 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private TokenGenerator<String> jwtTokenGenerator;
+
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
+
     /**
      * 在进入URL Mapping对应的处理方法之前
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("拦截器拦截，拦截的URL是 " + request.getRequestURI());
-        HttpSession session = request.getSession();
         //默认是isPass,因为这个拦截器是全局拦截器，会拦截所有的URL，但是并不是所有的URL都需要验证用户或者管理员
         //所以不需要认证的默认就是通过的
         boolean isPass = true;
@@ -56,11 +64,11 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
         //方便下面判断本次登录的是哪种类型，然后做出判断
         String permissionType = CONSUMER;
         if (method.getAnnotation(Consumer.class) != null) {
-            isPass = isConsumer(session);
+            isPass = isConsumer(request);
             permissionType = CONSUMER;
         }
         else if (method.getAnnotation(Manager.class) != null) {
-            isPass = isManager(session);
+            isPass = isManager(request);
             permissionType = MANAGER;
         }
 
@@ -86,9 +94,21 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
         return isPass;
     }
 
-    private boolean isManager(HttpSession session) {
+    private boolean isManager(HttpServletRequest request) {
 
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        if (StringUtils.isEmpty(token)) {
+            return false;
+        }
+
+        try {
+            jwtTokenGenerator.verifyToken(token);
+        } catch (Exception e) {
+            log.info("token过期或者解密失败");
+            return false;
+        }
+        User user = (User) redisTemplate.opsForValue().get(token);
+
         if (user == null) {
             return false;
         }
@@ -99,9 +119,18 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private boolean isConsumer(HttpSession session) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
-
+    private boolean isConsumer(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        if (StringUtils.isEmpty(token)) {
+            return false;
+        }
+        try {
+            jwtTokenGenerator.verifyToken(token);
+        } catch (Exception e) {
+            log.info("token过期或者解密失败");
+            return false;
+        }
+        User user = (User) redisTemplate.opsForValue().get(token);
         if (user == null) {
             return false;
         }

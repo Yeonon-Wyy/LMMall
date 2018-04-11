@@ -25,8 +25,6 @@ public class CategoryManagerController {
     @Autowired
     private ICategoryService categoryService;
 
-    @Autowired
-    private IUserService userService;
 
     /**
      *添加品类

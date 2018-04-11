@@ -9,6 +9,7 @@ import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
@@ -37,47 +38,50 @@ public class OrderController {
     @Autowired
     private IOrderService orderService;
 
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
+
 
     @PostMapping
     @Consumer
-    public ServerResponse createOrder(HttpSession session, Integer shippingId) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse createOrder(HttpServletRequest request, Integer shippingId) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         return orderService.createOrder(user.getId(), shippingId);
     }
 
     @DeleteMapping("{orderNo}")
     @Consumer
-    public ServerResponse deleteOrder(HttpSession session, @PathVariable("orderNo") Long orderNo) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse deleteOrder(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         return orderService.deleteOrder(user.getId(), orderNo);
     }
 
     @GetMapping("order_cart_product")
     @Consumer
-    public ServerResponse getOrderCartProduct(HttpSession session) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse getOrderCartProduct(HttpServletRequest request) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         return orderService.getOrderCartProduct(user.getId());
     }
 
     @GetMapping
     @Consumer
-    public ServerResponse<PageInfo> getOrders(HttpSession session, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+    public ServerResponse<PageInfo> getOrders(HttpServletRequest request, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                               @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         return orderService.getOrders(user.getId(), pageNum, pageSize);
     }
 
     @GetMapping("{orderNo}")
     @Consumer
-    public ServerResponse<OrderVo> getDetails(HttpSession session, @PathVariable("orderNo") Long orderNo) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse<OrderVo> getDetails(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         return orderService.getDetails(user.getId(), orderNo);
     }
 
     @PostMapping("{orderNo}/pay")
     @Consumer
-    public ServerResponse pay(HttpSession session, @PathVariable("orderNo") Long orderNo, HttpServletRequest request) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse pay(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         String path = request.getServletContext().getRealPath("upload");
         return orderService.pay(user.getId(), orderNo, path);
     }
@@ -117,8 +121,8 @@ public class OrderController {
 
     @GetMapping("{orderNo}/pay_status")
     @Consumer
-    public ServerResponse queryOrderPayStatus(HttpSession session, @PathVariable("orderNo") Long orderNo) {
-        User user = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse queryOrderPayStatus(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
+        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         ServerResponse response = orderService.queryOrderPayStatus(user.getId(), orderNo);
         if (response.isSuccess()) {
             return ServerResponse.createBySuccess(true);

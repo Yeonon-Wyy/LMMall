@@ -2,6 +2,7 @@ package top.yeonon.lmmall.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
@@ -11,7 +12,9 @@ import top.yeonon.lmmall.interceptor.authenticationAnnotation.Consumer;
 import top.yeonon.lmmall.repository.UserRepository;
 import top.yeonon.lmmall.service.IUserService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author yeonon
@@ -25,6 +28,9 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
 
     /**
      * 注册用户接口
@@ -60,8 +66,8 @@ public class UserController {
 
     @PutMapping("{username}")
     @Consumer
-    public ServerResponse updateUserInfo(HttpSession session, @PathVariable("username") String username, User user) {
-        User currentUser = (User) session.getAttribute(ServerConst.SESSION_KEY_FOR_CURRENT);
+    public ServerResponse updateUserInfo(HttpServletRequest request, @PathVariable("username") String username, User user) {
+        User currentUser = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
         if (!StringUtils.equals(username, currentUser.getUsername())) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
                     "参数错误，有可能是黑客攻击！");
@@ -69,7 +75,8 @@ public class UserController {
         user.setId(currentUser.getId());
         ServerResponse serverResponse = userService.updateUserInfo(user);
         if (serverResponse.isSuccess()) {
-            session.setAttribute(ServerConst.SESSION_KEY_FOR_CURRENT, serverResponse.getData());
+            redisTemplate.opsForValue().set(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME),
+                    serverResponse.getData(), 30, TimeUnit.MINUTES);
         }
         return serverResponse;
     }
