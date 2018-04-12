@@ -25,7 +25,7 @@ public class JwtTokenGenerator implements TokenGenerator<Integer, DecodedJWT> {
 
     private static final CoreProperties coreProperties = new CoreProperties();
 
-    private static final String SECRET = coreProperties.getSecurity().getJwtSecret();
+    private static final String SECRET = coreProperties.getSecurity().getToken().getJwtSecret();
 
     @Override
     public String generate(Integer authorization, int expireIn) throws Exception {

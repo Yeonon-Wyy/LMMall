@@ -54,8 +54,10 @@ public class TokenManagerController {
                 String accessToken;
                 String refreshToken;
                 try {
-                    accessToken = jwtTokenGenerator.generate(user.getId(), coreProperties.getSecurity().getTokenExpire());
-                    refreshToken = jwtTokenGenerator.generate(user.getId(), 10080);
+                    accessToken = jwtTokenGenerator.generate(user.getId(),
+                            coreProperties.getSecurity().getToken().getAccessTokenExpireIn());
+                    refreshToken = jwtTokenGenerator.generate(user.getId(),
+                            coreProperties.getSecurity().getToken().getRefreshTokenExpireIn());
                 } catch (Exception e) {
                     return ServerResponse.createByErrorMessage("登录失败");
                 }

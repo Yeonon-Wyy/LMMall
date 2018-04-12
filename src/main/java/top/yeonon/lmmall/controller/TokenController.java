@@ -50,8 +50,10 @@ public class TokenController {
             String accessToken;
             String refreshToken;
             try {
-                accessToken = jwtTokenGenerator.generate(user.getId(), coreProperties.getSecurity().getTokenExpire());
-                refreshToken = jwtTokenGenerator.generate(user.getId(), 10080);
+                accessToken = jwtTokenGenerator.generate(user.getId(),
+                        coreProperties.getSecurity().getToken().getAccessTokenExpireIn());
+                refreshToken = jwtTokenGenerator.generate(user.getId(),
+                        coreProperties.getSecurity().getToken().getRefreshTokenExpireIn());
             } catch (Exception e) {
                 log.info("生成jwt失败");
                 return ServerResponse.createByErrorMessage("登录失败");
@@ -97,7 +99,7 @@ public class TokenController {
         } catch (Exception e) {
             throw new JWTVerificationException("token过期或者错误");
         }
-        String newAccessToken = jwtTokenGenerator.generate(userId, coreProperties.getSecurity().getTokenExpire());
+        String newAccessToken = jwtTokenGenerator.generate(userId, coreProperties.getSecurity().getToken().getAccessTokenExpireIn());
         response.setHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME, newAccessToken);
         return ServerResponse.createBySuccessMessage("刷新token成功!");
     }
