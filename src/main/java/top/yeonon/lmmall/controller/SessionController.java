@@ -1,5 +1,7 @@
 package top.yeonon.lmmall.controller;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,7 +15,6 @@ import top.yeonon.lmmall.service.ISessionService;
 import top.yeonon.lmmall.token.TokenGenerator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author yeonon
@@ -28,7 +29,7 @@ public class SessionController {
     private ISessionService sessionService;
 
     @Autowired
-    private TokenGenerator<String> jwtTokenGenerator;
+    private TokenGenerator<Integer, DecodedJWT> jwtTokenGenerator;
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
@@ -43,16 +44,19 @@ public class SessionController {
     public ServerResponse<User> login(HttpServletResponse response, String username, String password) {
         ServerResponse<User> serverResponse = sessionService.login(username, password);
         if (serverResponse.isSuccess()) {
-            String token;
+            User user = serverResponse.getData();
+            String accessToken;
+            String refreshToken;
             try {
-                token = jwtTokenGenerator.generate(username);
+                accessToken = jwtTokenGenerator.generate(user.getId(), coreProperties.getSecurity().getTokenExpire());
+                refreshToken = jwtTokenGenerator.generate(user.getId(), 10080);
             } catch (Exception e) {
                 log.info("生成jwt失败");
                 return ServerResponse.createByErrorMessage("登录失败");
             }
-            redisTemplate.opsForValue().set(token, serverResponse.getData(),
-                    coreProperties.getSecurity().getTokenExpire(), TimeUnit.MINUTES);
-            response.setHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME, token);
+            redisTemplate.opsForValue().set(user.getId(), user);
+            response.setHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME, accessToken);
+            response.setHeader(ServerConst.LMMALL_REFRESH_TOKEN_NAME, refreshToken);
         }
         return serverResponse;
     }
@@ -64,8 +68,8 @@ public class SessionController {
     @DeleteMapping
     @Consumer
     public ServerResponse logout(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        redisTemplate.delete(token);
+        Integer userId = getUserId(request);
+        redisTemplate.delete(userId);
         return ServerResponse.createBySuccessMessage("登出成功!");
     }
 
@@ -75,9 +79,18 @@ public class SessionController {
     @GetMapping
     @Consumer
     public ServerResponse<User> getUserInfo(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        User currentUser = (User) redisTemplate.opsForValue().get(token);
+        Integer userId = getUserId(request);
+        User currentUser = (User) redisTemplate.opsForValue().get(userId);
         return ServerResponse.createBySuccess(currentUser);
+    }
+
+
+    /**
+     * 从token中解码token，并获取用户ID
+     */
+    private Integer getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
     }
 
 }

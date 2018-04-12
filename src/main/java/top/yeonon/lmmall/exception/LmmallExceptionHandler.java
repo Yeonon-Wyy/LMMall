@@ -1,5 +1,6 @@
 package top.yeonon.lmmall.exception;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,6 +15,13 @@ import java.util.Map;
  **/
 @RestControllerAdvice
 public class LmmallExceptionHandler {
+
+
+    @ExceptionHandler(JWTVerificationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ServerResponse processJWTVerificationException(JWTVerificationException e) {
+        return ServerResponse.createByErrorMessage(e.toString());
+    }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

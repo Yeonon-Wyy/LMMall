@@ -1,5 +1,7 @@
 package top.yeonon.lmmall.controller;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +11,10 @@ import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.interceptor.authenticationAnnotation.Consumer;
 import top.yeonon.lmmall.service.ICartService;
+import top.yeonon.lmmall.token.TokenGenerator;
 import top.yeonon.lmmall.vo.CartVo;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * @Author yeonon
@@ -26,18 +28,14 @@ public class CartController {
     private ICartService cartService;
 
 
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-
     /**
      *  添加商品到购物车里
      */
     @PostMapping("{productId}")
     @Consumer
     public ServerResponse<CartVo> addProductToCart(HttpServletRequest request, @PathVariable("productId") Integer productId, Integer count) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-
-        return cartService.addProductToCart(user.getId(), productId, count);
+        Integer userId = getUserId(request);
+        return cartService.addProductToCart(userId, productId, count);
     }
 
     /**
@@ -46,8 +44,8 @@ public class CartController {
     @PutMapping("{productId}")
     @Consumer
     public ServerResponse<CartVo> updateProductToCart(HttpServletRequest request, @PathVariable("productId") Integer productId, Integer count) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return cartService.updateProductToCart(user.getId(), productId, count);
+        Integer userId = getUserId(request);
+        return cartService.updateProductToCart(userId, productId, count);
     }
 
     /**
@@ -56,8 +54,8 @@ public class CartController {
     @DeleteMapping("{productIds}")
     @Consumer
     public ServerResponse<CartVo> deleteProductFromCart(HttpServletRequest request, @PathVariable("productIds") String productIds) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return cartService.deleteProductFromCart(user.getId(), productIds);
+        Integer userId = getUserId(request);
+        return cartService.deleteProductFromCart(userId, productIds);
     }
 
     /**
@@ -66,8 +64,8 @@ public class CartController {
     @GetMapping
     @Consumer
     public ServerResponse<CartVo> getLists(HttpServletRequest request) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return cartService.getLists(user.getId());
+        Integer userId = getUserId(request);
+        return cartService.getLists(userId);
     }
 
     /**
@@ -76,8 +74,8 @@ public class CartController {
     @PostMapping("selectAll")
     @Consumer
     public ServerResponse<CartVo> selectAll(HttpServletRequest request) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return cartService.selectOrUnSelect(user.getId(), null, ServerConst.Cart.CHECKED);
+        Integer userId = getUserId(request);
+        return cartService.selectOrUnSelect(userId, null, ServerConst.Cart.CHECKED);
     }
 
     /**
@@ -86,8 +84,8 @@ public class CartController {
     @PostMapping("unSelectAll")
     @Consumer
     public ServerResponse<CartVo> unSelectAll(HttpServletRequest request) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return cartService.selectOrUnSelect(user.getId(),null, ServerConst.Cart.UNCHECKED);
+        Integer userId = getUserId(request);
+        return cartService.selectOrUnSelect(userId,null, ServerConst.Cart.UNCHECKED);
     }
 
     /**
@@ -96,8 +94,8 @@ public class CartController {
     @PostMapping("select/{productId}")
     @Consumer
     public ServerResponse<CartVo> SelectProduct(HttpServletRequest request, @PathVariable("productId") Integer productId) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return cartService.selectOrUnSelect(user.getId(),productId, ServerConst.Cart.CHECKED);
+        Integer userId = getUserId(request);
+        return cartService.selectOrUnSelect(userId,productId, ServerConst.Cart.CHECKED);
     }
 
     /**
@@ -106,8 +104,8 @@ public class CartController {
     @PostMapping("unSelect/{productId}")
     @Consumer
     public ServerResponse<CartVo> unSelectProduct(HttpServletRequest request, @PathVariable("productId") Integer productId) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return cartService.selectOrUnSelect(user.getId(),productId, ServerConst.Cart.UNCHECKED);
+        Integer userId = getUserId(request);
+        return cartService.selectOrUnSelect(userId,productId, ServerConst.Cart.UNCHECKED);
     }
 
     /**
@@ -116,9 +114,14 @@ public class CartController {
     @GetMapping("totalCount")
     @Consumer
     public ServerResponse<CartVo> getTotalCount(HttpServletRequest request) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return cartService.getTotalCount(user.getId());
+        Integer userId = getUserId(request);
+        return cartService.getTotalCount(userId);
     }
 
+
+    private Integer getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
+    }
 
 }

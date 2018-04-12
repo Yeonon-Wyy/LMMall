@@ -1,5 +1,7 @@
 package top.yeonon.lmmall.interceptor;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +43,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     private IUserService userService;
 
     @Autowired
-    private TokenGenerator<String> jwtTokenGenerator;
+    private TokenGenerator<Integer, DecodedJWT> jwtTokenGenerator;
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
@@ -95,10 +97,12 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
 
     private boolean isManager(HttpServletRequest request) {
         String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        if (!verfiy(token)) {
-            return false;
+        DecodedJWT jwt = verfiy(token);
+        if (jwt == null) {
+            throw new JWTVerificationException("token过期或者错误");
         }
-        User user = (User) redisTemplate.opsForValue().get(token);
+        int userId = jwt.getClaim("authorization").asInt();
+        User user = (User) redisTemplate.opsForValue().get(userId);
 
         if (user == null) {
             return false;
@@ -112,10 +116,12 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
 
     private boolean isConsumer(HttpServletRequest request) {
         String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        if (!verfiy(token)) {
-            return false;
+        DecodedJWT jwt = verfiy(token);
+        if (jwt == null) {
+            throw new JWTVerificationException("token过期或者错误");
         }
-        User user = (User) redisTemplate.opsForValue().get(token);
+        int userId = jwt.getClaim("authorization").asInt();
+        User user = (User) redisTemplate.opsForValue().get(userId);
         if (user == null) {
             return false;
         }
@@ -123,17 +129,18 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     }
 
 
-    private boolean verfiy(String token) {
+    private DecodedJWT verfiy(String token) {
         if (StringUtils.isEmpty(token)) {
-            return false;
+            return null;
         }
+        DecodedJWT jwt = null;
         try {
-            jwtTokenGenerator.verifyToken(token);
+            jwt = jwtTokenGenerator.verifyToken(token);
         } catch (Exception e) {
             log.info("token过期或者解密失败");
-            return false;
+            return null;
         }
-        return true;
+        return jwt;
     }
 
     /**

@@ -1,5 +1,6 @@
 package top.yeonon.lmmall.controller.backend;
 
+import com.auth0.jwt.JWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +26,6 @@ public class UserManagerController {
     @Autowired
     private IUserService userService;
 
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-
     /**
      * 获取用户列表，需要管理员的身份
      * Ps：这里先这样写是为了把业务逻辑先写，后面会抽离出来单独作为一个项目
@@ -41,10 +39,15 @@ public class UserManagerController {
     @DeleteMapping("/{id}")
     @Manager
     public ServerResponse deleteUser(HttpServletRequest request, @PathVariable("id") Integer id) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        if (user.getId().equals(id)) {
+        Integer userId = getUserId(request);
+        if (userId.equals(id)) {
             return ServerResponse.createByErrorMessage("不要自杀！");
         }
         return userService.deleteUser(id);
+    }
+
+    private Integer getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
     }
 }

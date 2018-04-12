@@ -1,5 +1,6 @@
 package top.yeonon.lmmall.controller;
 
+import com.auth0.jwt.JWT;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,8 +30,6 @@ public class ShippingController {
     @Autowired
     private IShippingService shippingService;
 
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
 
     /**
      * 添加收货地址
@@ -38,8 +37,8 @@ public class ShippingController {
     @PostMapping
     @Consumer
     public ServerResponse addShipping(HttpServletRequest request, Shipping shipping) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return shippingService.addShipping(user.getId(), shipping);
+        Integer userId = getUserId(request);
+        return shippingService.addShipping(userId, shipping);
     }
 
     /**
@@ -48,8 +47,8 @@ public class ShippingController {
     @DeleteMapping("{shippingId}")
     @Consumer
     public ServerResponse deleteShipping(HttpServletRequest request, @PathVariable("shippingId") Integer shippingId) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return shippingService.deleteShipping(user.getId(), shippingId);
+        Integer userId = getUserId(request);
+        return shippingService.deleteShipping(userId, shippingId);
     }
 
     /**
@@ -58,9 +57,9 @@ public class ShippingController {
     @PutMapping("{shippingId}")
     @Consumer
     public ServerResponse updateShipping(HttpServletRequest request, @PathVariable("shippingId") Integer shippingId, Shipping shipping) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
+        Integer userId = getUserId(request);
         shipping.setId(shippingId);
-        return shippingService.updateShipping(user.getId(), shipping);
+        return shippingService.updateShipping(userId, shipping);
     }
 
     /**
@@ -69,8 +68,8 @@ public class ShippingController {
     @GetMapping("{shippingId}")
     @Consumer
     public ServerResponse<Shipping> selectShipping(HttpServletRequest request, @PathVariable("shippingId") Integer shippingId) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return shippingService.selectShipping(user.getId(), shippingId);
+        Integer userId = getUserId(request);
+        return shippingService.selectShipping(userId, shippingId);
     }
 
     /**
@@ -81,7 +80,12 @@ public class ShippingController {
     public ServerResponse<PageInfo> getShippingList(HttpServletRequest request,
                                                     @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                                     @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return shippingService.getShippingList(user.getId(), pageNum, pageSize);
+        Integer userId = getUserId(request);
+        return shippingService.getShippingList(userId, pageNum, pageSize);
+    }
+
+    private Integer getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
     }
 }

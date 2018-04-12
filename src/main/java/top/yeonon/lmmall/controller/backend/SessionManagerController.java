@@ -1,5 +1,7 @@
 package top.yeonon.lmmall.controller.backend;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,7 +39,7 @@ public class SessionManagerController {
     private RedisTemplate<Object, Object> redisTemplate;
 
     @Autowired
-    private TokenGenerator<String> jwtTokenGenerator;
+    private TokenGenerator<Integer, DecodedJWT> jwtTokenGenerator;
 
     @Autowired
     private CoreProperties coreProperties;
@@ -49,16 +51,17 @@ public class SessionManagerController {
             User user = serverResponse.getData();
             ServerResponse checkResponse = userService.checkAdminRole(user);
             if (checkResponse.isSuccess()) {
-                String token = null;
+                String accessToken;
+                String refreshToken;
                 try {
-                    token = jwtTokenGenerator.generate(username);
+                    accessToken = jwtTokenGenerator.generate(user.getId(), coreProperties.getSecurity().getTokenExpire());
+                    refreshToken = jwtTokenGenerator.generate(user.getId(), 10080);
                 } catch (Exception e) {
-                    log.info("生成jwt失败");
                     return ServerResponse.createByErrorMessage("登录失败");
                 }
-                redisTemplate.opsForValue().set(token, serverResponse.getData(),
-                        coreProperties.getSecurity().getTokenExpire(), TimeUnit.MINUTES);
-                response.setHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME, token);
+                redisTemplate.opsForValue().set(user.getId(), user);
+                response.setHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME, accessToken);
+                response.setHeader(ServerConst.LMMALL_REFRESH_TOKEN_NAME, refreshToken);
             }
             else {
                 return ServerResponse.createByErrorMessage("不是管理员");
@@ -70,8 +73,14 @@ public class SessionManagerController {
     @DeleteMapping
     @Manager
     public ServerResponse logout(HttpServletRequest request) {
-        redisTemplate.delete(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return ServerResponse.createBySuccessMessage("管理员登出成功");
+        Integer userId = getUserId(request);
+        redisTemplate.delete(userId);
+        return ServerResponse.createBySuccessMessage("登出成功!");
+    }
+
+    private Integer getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
     }
 
 }

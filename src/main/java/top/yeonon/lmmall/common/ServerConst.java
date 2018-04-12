@@ -23,6 +23,13 @@ public interface ServerConst {
      */
     String LMMALL_LOGIN_TOKEN_NAME = "login-token";
 
+    String LMMALL_REFRESH_TOKEN_NAME = "refresh-token";
+
+    /**
+     * 放入token payload 的信息
+     */
+    String TOKEN_PAYLOAD_NAME = "authorization";
+
 
     /**
      * 支付宝默认回调地址

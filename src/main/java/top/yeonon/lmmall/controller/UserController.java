@@ -1,5 +1,6 @@
 package top.yeonon.lmmall.controller;
 
+import com.auth0.jwt.JWT;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -67,7 +68,8 @@ public class UserController {
     @PutMapping("{username}")
     @Consumer
     public ServerResponse updateUserInfo(HttpServletRequest request, @PathVariable("username") String username, User user) {
-        User currentUser = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
+        Integer userId = getUserId(request);
+        User currentUser = (User) redisTemplate.opsForValue().get(userId);
         if (!StringUtils.equals(username, currentUser.getUsername())) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
                     "参数错误，有可能是黑客攻击！");
@@ -79,5 +81,10 @@ public class UserController {
                     serverResponse.getData(), 30, TimeUnit.MINUTES);
         }
         return serverResponse;
+    }
+
+    private Integer getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
     }
 }

@@ -7,16 +7,16 @@ package top.yeonon.lmmall.token;
  *
  * Token生成器
  **/
-public interface TokenGenerator<T> {
+public interface TokenGenerator<T, R> {
 
     /**
      * 生成token
      */
-    String generate(T authorization) throws Exception;
+    String generate(T authorization, int expireIn) throws Exception;
 
     /**
      * 验证token是否合法
      */
-    boolean verifyToken(String token) throws Exception;
+    R verifyToken(String token) throws Exception;
 
 }

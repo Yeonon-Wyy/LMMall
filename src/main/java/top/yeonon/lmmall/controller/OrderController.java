@@ -3,6 +3,7 @@ package top.yeonon.lmmall.controller;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.demo.trade.config.Configs;
+import com.auth0.jwt.JWT;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import lombok.extern.java.Log;
@@ -38,52 +39,50 @@ public class OrderController {
     @Autowired
     private IOrderService orderService;
 
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
 
 
     @PostMapping
     @Consumer
     public ServerResponse createOrder(HttpServletRequest request, Integer shippingId) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return orderService.createOrder(user.getId(), shippingId);
+        Integer userId = getUserId(request);
+        return orderService.createOrder(userId, shippingId);
     }
 
     @DeleteMapping("{orderNo}")
     @Consumer
     public ServerResponse deleteOrder(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return orderService.deleteOrder(user.getId(), orderNo);
+        Integer userId = getUserId(request);
+        return orderService.deleteOrder(userId, orderNo);
     }
 
     @GetMapping("order_cart_product")
     @Consumer
     public ServerResponse getOrderCartProduct(HttpServletRequest request) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return orderService.getOrderCartProduct(user.getId());
+        Integer userId = getUserId(request);
+        return orderService.getOrderCartProduct(userId);
     }
 
     @GetMapping
     @Consumer
     public ServerResponse<PageInfo> getOrders(HttpServletRequest request, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                               @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return orderService.getOrders(user.getId(), pageNum, pageSize);
+        Integer userId = getUserId(request);
+        return orderService.getOrders(userId, pageNum, pageSize);
     }
 
     @GetMapping("{orderNo}")
     @Consumer
     public ServerResponse<OrderVo> getDetails(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        return orderService.getDetails(user.getId(), orderNo);
+        Integer userId = getUserId(request);
+        return orderService.getDetails(userId ,orderNo);
     }
 
     @PostMapping("{orderNo}/pay")
     @Consumer
     public ServerResponse pay(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
+        Integer userId = getUserId(request);
         String path = request.getServletContext().getRealPath("upload");
-        return orderService.pay(user.getId(), orderNo, path);
+        return orderService.pay(userId, orderNo, path);
     }
 
     @PostMapping("alipay_callback")
@@ -122,11 +121,17 @@ public class OrderController {
     @GetMapping("{orderNo}/pay_status")
     @Consumer
     public ServerResponse queryOrderPayStatus(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
-        User user = (User) redisTemplate.opsForValue().get(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME));
-        ServerResponse response = orderService.queryOrderPayStatus(user.getId(), orderNo);
+        Integer userId = getUserId(request);
+        ServerResponse response = orderService.queryOrderPayStatus(userId, orderNo);
         if (response.isSuccess()) {
             return ServerResponse.createBySuccess(true);
         }
         return ServerResponse.createBySuccess(false);
+    }
+
+
+    private Integer getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
     }
 }
