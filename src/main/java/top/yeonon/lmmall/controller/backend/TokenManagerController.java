@@ -25,9 +25,9 @@ import java.util.concurrent.TimeUnit;
  * @date 2018/4/4 0004 22:53
  **/
 @RestController
-@RequestMapping("/manage/sessions")
+@RequestMapping("/manage/token")
 @Log
-public class SessionManagerController {
+public class TokenManagerController {
 
     @Autowired
     private ISessionService sessionService;

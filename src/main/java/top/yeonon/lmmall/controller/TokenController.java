@@ -1,8 +1,10 @@
 package top.yeonon.lmmall.controller;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.java.Log;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +23,9 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2018/4/2 0002 20:47
  **/
 @RestController
-@RequestMapping("sessions")
+@RequestMapping("token")
 @Log
-public class SessionController {
+public class TokenController {
 
     @Autowired
     private ISessionService sessionService;
@@ -84,6 +86,22 @@ public class SessionController {
         return ServerResponse.createBySuccess(currentUser);
     }
 
+    @GetMapping("refresh")
+    public ServerResponse refreshToken(HttpServletRequest request, HttpServletResponse response, Integer userId) throws Exception {
+        String refreshToken = request.getHeader(ServerConst.LMMALL_REFRESH_TOKEN_NAME);
+        if (StringUtils.isEmpty(refreshToken)) {
+            return ServerResponse.createByErrorMessage("请在请求头中携带refreshToken");
+        }
+        try {
+            jwtTokenGenerator.verifyToken(refreshToken);
+        } catch (Exception e) {
+            throw new JWTVerificationException("token过期或者错误");
+        }
+        String newAccessToken = jwtTokenGenerator.generate(userId, coreProperties.getSecurity().getTokenExpire());
+        response.setHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME, newAccessToken);
+        return ServerResponse.createBySuccessMessage("刷新token成功!");
+    }
+
 
     /**
      * 从token中解码token，并获取用户ID
@@ -92,5 +110,7 @@ public class SessionController {
         String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
         return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
     }
+
+
 
 }
