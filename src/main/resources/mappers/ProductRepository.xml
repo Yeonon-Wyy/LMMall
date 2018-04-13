@@ -183,7 +183,7 @@
     <if test="productName != null">
       AND name LIKE #{productName}
     </if>
-    <if test="productIds">
+    <if test="productIds != null and productIds.size() > 0">
       AND category_id in
       <foreach collection="productIds" open="(" separator="," close=")" item="item" index="index">
         #{item}

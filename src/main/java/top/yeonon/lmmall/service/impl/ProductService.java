@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import top.yeonon.lmmall.common.ResponseCode;
@@ -44,26 +45,32 @@ public class ProductService implements IProductService {
 
     @Override
     @SuppressWarnings("unchecked")
-    @Cacheable(value = "ProductCache", key = "#root.caches[0].name + ':' + #pageNum + ':products'")
+    @Cacheable(value = "ProductCache", key = "#root.caches[0].name + ':category:'+ #categoryId+ ':pageNum:' + #pageNum",
+                condition = "#keyword == null and #categoryId != null")
     public ServerResponse<PageInfo> getProducts(String keyword, Integer categoryId, Integer pageNum, Integer pageSize, String orderBy) {
         if (categoryId == null && StringUtils.isBlank(keyword)) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
-                    "参数错误，keyword和categoryId都不能为空");
+                    "参数错误，keyword或categoryId不能为空");
         }
 
         List<Integer> categoryIdList = Lists.newArrayList();
-        Category category = categoryRepository.selectByPrimaryKey(categoryId);
-        if (category == null) {
-            PageHelper.startPage(pageNum, pageSize);
-            List<ProductListVo> productListVos = Lists.newArrayList();
-            PageInfo pageInfo = new PageInfo(productListVos);
-            return ServerResponse.createBySuccess(pageInfo);
-        }
         //获取品类的id以及子id
-        categoryIdList = (List<Integer>) categoryService.getDeepChildrenCategory(category.getId()).getData();
+        if (categoryId != null) {
+            Category category = categoryRepository.selectByPrimaryKey(categoryId);
+            if (category == null) {
+                PageHelper.startPage(pageNum, pageSize);
+                List<ProductListVo> productListVos = Lists.newArrayList();
+                PageInfo pageInfo = new PageInfo(productListVos);
+                return ServerResponse.createBySuccess(pageInfo);
+            }
+            categoryIdList = (List<Integer>) categoryService.getDeepChildrenCategory(category.getId()).getData();
+        }
 
         //拼接查询的关键字
-        keyword = new StringBuilder().append("%").append(keyword).append("%").toString();
+        if (StringUtils.isNotBlank(keyword)) {
+            keyword = new StringBuilder().append("%").append(keyword).append("%").toString();
+        }
+
 
         PageHelper.startPage(pageNum, pageSize);
 
@@ -76,7 +83,9 @@ public class ProductService implements IProductService {
         }
 
         //获取满足条件的商品
+        //这里需要注意，categoryIdList不可能是null，Mybatis返回的集合类型不可能是null，如果没有数据会返回空的集合
         List<Product> productList = productRepository.selectProductsByNameAndProductIds(keyword, categoryIdList);
+
 
         //转换成VO对象返回
         List<ProductListVo> productListVos = Lists.newArrayList();
@@ -131,6 +140,8 @@ public class ProductService implements IProductService {
 
 
     @Override
+    @CachePut(value = "ProductCache", key = "#root.caches[0].name + ':' + #product.id",
+             condition = "#product.id != null")
     public ServerResponse addOrUpdateProduct(Product product) {
         if (product == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
@@ -143,14 +154,16 @@ public class ProductService implements IProductService {
             if (rowCount < 0) {
                 return ServerResponse.createByErrorMessage("更新商品失败");
             }
-            return ServerResponse.createBySuccessMessage("更新商品成功");
+            Product newProduct = productRepository.selectByPrimaryKey(product.getId());
+            ProductDetailsVo productDetailsVo = assembleProductDetailsVo(newProduct);
+            return ServerResponse.createBySuccess(productDetailsVo);
         }
         //如果上面没有返回，就表示product 的id没有传进来，这时候就是增加商品
         int rowCount = productRepository.insert(product);
         if (rowCount < 0) {
             return ServerResponse.createByErrorMessage("添加商品失败");
         }
-        return ServerResponse.createBySuccessMessage("添加商品成功!");
+        return ServerResponse.createBySuccessMessage("添加商品成功");
     }
 
     @Override
@@ -176,6 +189,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Cacheable(value = "ProductCache")
     public ServerResponse<ProductDetailsVo> getManageProductDetails(Integer productId) {
         if (productId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
@@ -191,6 +205,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @CachePut(value = "ProductCache", key = "#root.caches[0].name + ':' + #productId")
     public ServerResponse updateProductStatus(Integer productId, Integer status) {
         if (productId == null || status == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
@@ -205,7 +220,10 @@ public class ProductService implements IProductService {
         if (rowCount <= 0) {
             return ServerResponse.createByErrorMessage("商品上下架失败");
         }
-        return ServerResponse.createBySuccessMessage("商品上下架成功");
+
+        Product newProduct = productRepository.selectByPrimaryKey(product.getId());
+        ProductDetailsVo productDetailsVo = assembleProductDetailsVo(newProduct);
+        return ServerResponse.createBySuccess(productDetailsVo);
     }
 
     /**
