@@ -2,6 +2,7 @@ package top.yeonon.lmmall.controller;
 
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import top.yeonon.lmmall.common.ServerResponse;
 

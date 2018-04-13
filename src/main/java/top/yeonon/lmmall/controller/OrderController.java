@@ -28,6 +28,8 @@ import java.util.Map;
 /**
  * @Author yeonon
  * @date 2018/4/8 0008 19:56
+ *
+ * TODO 关于订单模块是否要缓存，我认为需要上线之后根据用户情况做判断，比较缓存是在使用内存，内存也是宝贵的资源
  **/
 @RestController
 @RequestMapping("/order")
@@ -38,8 +40,6 @@ public class OrderController {
 
     @Autowired
     private IOrderService orderService;
-
-
 
     @PostMapping
     @Consumer

@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
@@ -43,6 +44,7 @@ public class ProductService implements IProductService {
 
     @Override
     @SuppressWarnings("unchecked")
+    @Cacheable(value = "ProductCache", key = "#root.caches[0].name + ':' + #pageNum + ':products'")
     public ServerResponse<PageInfo> getProducts(String keyword, Integer categoryId, Integer pageNum, Integer pageSize, String orderBy) {
         if (categoryId == null && StringUtils.isBlank(keyword)) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
@@ -89,6 +91,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Cacheable(value = "ProductCache")
     public ServerResponse<ProductDetailsVo> getProductDetails(Integer productId) {
         if (productId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),

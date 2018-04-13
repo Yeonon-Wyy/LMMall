@@ -3,6 +3,7 @@ package top.yeonon.lmmall.vo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  **/
 @Getter
 @Setter
-public class OrderProductVo {
+public class OrderProductVo implements Serializable {
     private List<OrderItemVo> orderItemVoList;
     private BigDecimal totalPrice;
     private String imageHost;

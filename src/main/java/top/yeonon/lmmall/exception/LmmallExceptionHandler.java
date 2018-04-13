@@ -20,12 +20,14 @@ public class LmmallExceptionHandler {
     @ExceptionHandler(JWTVerificationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ServerResponse processJWTVerificationException(JWTVerificationException e) {
+        e.printStackTrace();
         return ServerResponse.createByErrorMessage(e.toString());
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ServerResponse processRuntimeException(RuntimeException e) {
+        e.printStackTrace();
         return ServerResponse.createByErrorMessage(e.toString());
     }
 }

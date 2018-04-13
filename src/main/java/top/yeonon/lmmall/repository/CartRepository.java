@@ -2,13 +2,17 @@ package top.yeonon.lmmall.repository;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import top.yeonon.lmmall.entity.Cart;
-import top.yeonon.lmmall.entity.OrderItem;
 
 import java.util.List;
 
 @Mapper
 public interface CartRepository {
+
     int deleteByPrimaryKey(Integer id);
 
     int insert(Cart record);

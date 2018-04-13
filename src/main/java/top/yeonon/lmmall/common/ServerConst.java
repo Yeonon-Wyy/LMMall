@@ -11,10 +11,6 @@ import java.util.Set;
 public interface ServerConst {
 
     String SESSION_KEY_PREFIX = "SESSION_KEY_FOR_";
-    /**
-     * 保存用户信息的SESSION KEY
-     */
-    String SESSION_KEY_FOR_CURRENT = SESSION_KEY_PREFIX + "CURRENT_USER";
 
     String FORGET_PASSWORD_TOKEN_KEY = "FORGET_PASSWORD_TOKEN_KEY:";
 

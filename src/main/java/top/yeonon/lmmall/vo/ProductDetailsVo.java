@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Date;
@@ -17,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProductDetailsVo {
+public class ProductDetailsVo implements Serializable {
 
     private Integer productId;
     private Integer categoryId;

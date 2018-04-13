@@ -4,6 +4,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
@@ -38,6 +39,7 @@ public class CartService implements ICartService {
     private CoreProperties coreProperties;
 
     @Override
+    @CachePut(value = "CartCache", key = "#root.caches[0].name + ':' + #userId")
     public ServerResponse<CartVo> addProductToCart(Integer userId, Integer productId, Integer count) {
         if (productId == null || userId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
@@ -61,6 +63,7 @@ public class CartService implements ICartService {
     }
 
     @Override
+    @CachePut(value = "CartCache", key = "#root.caches[0].name + ':' + #userId")
     public ServerResponse<CartVo> updateProductToCart(Integer userId, Integer productId, Integer count) {
         if (productId == null || userId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
@@ -75,6 +78,7 @@ public class CartService implements ICartService {
     }
 
     @Override
+    @CacheEvict(value = "CartCache", key = "#root.caches[0].name + ':' + #userId")
     public ServerResponse<CartVo> deleteProductFromCart(Integer userId, String productIds) {
         if (userId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
@@ -87,11 +91,13 @@ public class CartService implements ICartService {
     }
 
     @Override
+    @Cacheable(value = "CartCache")
     public ServerResponse<CartVo> getLists(Integer userId) {
         return getCartVoLimit(userId);
     }
 
     @Override
+    @CachePut(value = "CartCache", key = "#root.caches[0].name + ':' + #userId")
     public ServerResponse<CartVo> selectOrUnSelect(Integer userId, Integer productId, Integer checked) {
         if (userId == null) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),

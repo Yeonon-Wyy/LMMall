@@ -3,6 +3,7 @@ package top.yeonon.lmmall.vo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -12,7 +13,7 @@ import java.util.Date;
  **/
 @Getter
 @Setter
-public class OrderItemVo {
+public class OrderItemVo implements Serializable {
     private Long orderNo;
     private Integer productId;
     private String productName;
