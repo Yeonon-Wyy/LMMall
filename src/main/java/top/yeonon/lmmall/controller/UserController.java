@@ -68,7 +68,7 @@ public class UserController {
     @PutMapping("{username}")
     @Consumer
     public ServerResponse updateUserInfo(HttpServletRequest request, @PathVariable("username") String username, User user) {
-        Integer userId = getUserId(request);
+        String userId = getUserId(request);
         User currentUser = (User) redisTemplate.opsForValue().get(userId);
         if (!StringUtils.equals(username, currentUser.getUsername())) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
@@ -77,14 +77,13 @@ public class UserController {
         user.setId(currentUser.getId());
         ServerResponse serverResponse = userService.updateUserInfo(user);
         if (serverResponse.isSuccess()) {
-            redisTemplate.opsForValue().set(request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME),
-                    serverResponse.getData(), 30, TimeUnit.MINUTES);
+            redisTemplate.delete(userId);
         }
         return serverResponse;
     }
 
-    private Integer getUserId(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
+    private String getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.Token.TOKEN_PAYLOAD_NAME).asString();
     }
 }

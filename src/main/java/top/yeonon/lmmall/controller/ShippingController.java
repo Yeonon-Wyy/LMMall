@@ -37,8 +37,8 @@ public class ShippingController {
     @PostMapping
     @Consumer
     public ServerResponse addShipping(HttpServletRequest request, Shipping shipping) {
-        Integer userId = getUserId(request);
-        return shippingService.addShipping(userId, shipping);
+        String userId = getUserId(request);
+        return shippingService.addShipping(Integer.valueOf(userId), shipping);
     }
 
     /**
@@ -47,8 +47,8 @@ public class ShippingController {
     @DeleteMapping("{shippingId}")
     @Consumer
     public ServerResponse deleteShipping(HttpServletRequest request, @PathVariable("shippingId") Integer shippingId) {
-        Integer userId = getUserId(request);
-        return shippingService.deleteShipping(userId, shippingId);
+        String userId = getUserId(request);
+        return shippingService.deleteShipping(Integer.valueOf(userId), shippingId);
     }
 
     /**
@@ -57,9 +57,9 @@ public class ShippingController {
     @PutMapping("{shippingId}")
     @Consumer
     public ServerResponse updateShipping(HttpServletRequest request, @PathVariable("shippingId") Integer shippingId, Shipping shipping) {
-        Integer userId = getUserId(request);
+        String userId = getUserId(request);
         shipping.setId(shippingId);
-        return shippingService.updateShipping(userId, shipping);
+        return shippingService.updateShipping(Integer.valueOf(userId), shipping);
     }
 
     /**
@@ -68,8 +68,8 @@ public class ShippingController {
     @GetMapping("{shippingId}")
     @Consumer
     public ServerResponse<Shipping> selectShipping(HttpServletRequest request, @PathVariable("shippingId") Integer shippingId) {
-        Integer userId = getUserId(request);
-        return shippingService.selectShipping(userId, shippingId);
+        String userId = getUserId(request);
+        return shippingService.selectShipping(Integer.valueOf(userId), shippingId);
     }
 
     /**
@@ -80,12 +80,12 @@ public class ShippingController {
     public ServerResponse<PageInfo> getShippingList(HttpServletRequest request,
                                                     @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                                     @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        Integer userId = getUserId(request);
-        return shippingService.getShippingList(userId, pageNum, pageSize);
+        String userId = getUserId(request);
+        return shippingService.getShippingList(Integer.valueOf(userId), pageNum, pageSize);
     }
 
-    private Integer getUserId(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
+    private String getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.Token.TOKEN_PAYLOAD_NAME).asString();
     }
 }

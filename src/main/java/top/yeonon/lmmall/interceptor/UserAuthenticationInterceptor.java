@@ -43,7 +43,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     private IUserService userService;
 
     @Autowired
-    private TokenGenerator<Integer, DecodedJWT> jwtTokenGenerator;
+    private TokenGenerator<String, DecodedJWT> jwtTokenGenerator;
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
@@ -96,12 +96,12 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     }
 
     private boolean isManager(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        String token = request.getHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME);
         DecodedJWT jwt = verfiy(token);
         if (jwt == null) {
             throw new JWTVerificationException("token过期或者错误");
         }
-        int userId = jwt.getClaim("authorization").asInt();
+        String userId = jwt.getClaim("authorization").asString();
         User user = (User) redisTemplate.opsForValue().get(userId);
 
         if (user == null) {
@@ -115,12 +115,12 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
     }
 
     private boolean isConsumer(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
+        String token = request.getHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME);
         DecodedJWT jwt = verfiy(token);
         if (jwt == null) {
             throw new JWTVerificationException("token过期或者错误");
         }
-        int userId = jwt.getClaim("authorization").asInt();
+        String userId = jwt.getClaim("authorization").asString();
         User user = (User) redisTemplate.opsForValue().get(userId);
         if (user == null) {
             return false;

@@ -45,7 +45,6 @@ public class CategoryManagerController {
     public ServerResponse updateCategory(@PathVariable("id") Integer categoryId,
                                          String categoryName) {
 
-
         return categoryService.updateCategory(categoryId, categoryName);
     }
 

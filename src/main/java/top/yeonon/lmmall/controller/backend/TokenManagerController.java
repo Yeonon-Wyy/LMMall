@@ -39,7 +39,7 @@ public class TokenManagerController {
     private RedisTemplate<Object, Object> redisTemplate;
 
     @Autowired
-    private TokenGenerator<Integer, DecodedJWT> jwtTokenGenerator;
+    private TokenGenerator<String, DecodedJWT> jwtTokenGenerator;
 
     @Autowired
     private CoreProperties coreProperties;
@@ -54,16 +54,16 @@ public class TokenManagerController {
                 String accessToken;
                 String refreshToken;
                 try {
-                    accessToken = jwtTokenGenerator.generate(user.getId(),
+                    accessToken = jwtTokenGenerator.generate(user.getId().toString(),
                             coreProperties.getSecurity().getToken().getAccessTokenExpireIn());
-                    refreshToken = jwtTokenGenerator.generate(user.getId(),
+                    refreshToken = jwtTokenGenerator.generate(ServerConst.Token.REFRESH_TOKEN_PAYLOAD_NAME + user.getId().toString(),
                             coreProperties.getSecurity().getToken().getRefreshTokenExpireIn());
                 } catch (Exception e) {
                     return ServerResponse.createByErrorMessage("登录失败");
                 }
-                redisTemplate.opsForValue().set(user.getId(), user);
-                response.setHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME, accessToken);
-                response.setHeader(ServerConst.LMMALL_REFRESH_TOKEN_NAME, refreshToken);
+                redisTemplate.opsForValue().set(user.getId().toString(), user);
+                response.setHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME, accessToken);
+                response.setHeader(ServerConst.Token.LMMALL_REFRESH_TOKEN_NAME, refreshToken);
             }
             else {
                 return ServerResponse.createByErrorMessage("不是管理员");
@@ -75,14 +75,13 @@ public class TokenManagerController {
     @DeleteMapping
     @Manager
     public ServerResponse logout(HttpServletRequest request) {
-        Integer userId = getUserId(request);
+        String userId = getUserId(request);
         redisTemplate.delete(userId);
         return ServerResponse.createBySuccessMessage("登出成功!");
     }
 
-    private Integer getUserId(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
+    private String getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.Token.TOKEN_PAYLOAD_NAME).asString();
     }
-
 }

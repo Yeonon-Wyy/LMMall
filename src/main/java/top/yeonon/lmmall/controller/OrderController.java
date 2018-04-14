@@ -44,45 +44,45 @@ public class OrderController {
     @PostMapping
     @Consumer
     public ServerResponse createOrder(HttpServletRequest request, Integer shippingId) {
-        Integer userId = getUserId(request);
-        return orderService.createOrder(userId, shippingId);
+        String userId = getUserId(request);
+        return orderService.createOrder(Integer.valueOf(userId), shippingId);
     }
 
     @DeleteMapping("{orderNo}")
     @Consumer
     public ServerResponse deleteOrder(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
-        Integer userId = getUserId(request);
-        return orderService.deleteOrder(userId, orderNo);
+        String userId = getUserId(request);
+        return orderService.deleteOrder(Integer.valueOf(userId), orderNo);
     }
 
     @GetMapping("order_cart_product")
     @Consumer
     public ServerResponse getOrderCartProduct(HttpServletRequest request) {
-        Integer userId = getUserId(request);
-        return orderService.getOrderCartProduct(userId);
+        String userId = getUserId(request);
+        return orderService.getOrderCartProduct(Integer.valueOf(userId));
     }
 
     @GetMapping
     @Consumer
     public ServerResponse<PageInfo> getOrders(HttpServletRequest request, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                               @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        Integer userId = getUserId(request);
-        return orderService.getOrders(userId, pageNum, pageSize);
+        String userId = getUserId(request);
+        return orderService.getOrders(Integer.valueOf(userId), pageNum, pageSize);
     }
 
     @GetMapping("{orderNo}")
     @Consumer
     public ServerResponse<OrderVo> getDetails(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
-        Integer userId = getUserId(request);
-        return orderService.getDetails(userId ,orderNo);
+        String userId = getUserId(request);
+        return orderService.getDetails(Integer.valueOf(userId) ,orderNo);
     }
 
     @PostMapping("{orderNo}/pay")
     @Consumer
     public ServerResponse pay(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
-        Integer userId = getUserId(request);
+        String userId = getUserId(request);
         String path = request.getServletContext().getRealPath("upload");
-        return orderService.pay(userId, orderNo, path);
+        return orderService.pay(Integer.valueOf(userId), orderNo, path);
     }
 
     @PostMapping("alipay_callback")
@@ -121,8 +121,8 @@ public class OrderController {
     @GetMapping("{orderNo}/pay_status")
     @Consumer
     public ServerResponse queryOrderPayStatus(HttpServletRequest request, @PathVariable("orderNo") Long orderNo) {
-        Integer userId = getUserId(request);
-        ServerResponse response = orderService.queryOrderPayStatus(userId, orderNo);
+        String userId = getUserId(request);
+        ServerResponse response = orderService.queryOrderPayStatus(Integer.valueOf(userId), orderNo);
         if (response.isSuccess()) {
             return ServerResponse.createBySuccess(true);
         }
@@ -130,8 +130,8 @@ public class OrderController {
     }
 
 
-    private Integer getUserId(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
+    private String getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.Token.TOKEN_PAYLOAD_NAME).asString();
     }
 }

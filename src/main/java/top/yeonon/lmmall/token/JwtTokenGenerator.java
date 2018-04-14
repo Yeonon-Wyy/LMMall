@@ -21,14 +21,14 @@ import java.util.Map;
  * 基于JWT 实现的token生成和校验
  **/
 @Component
-public class JwtTokenGenerator implements TokenGenerator<Integer, DecodedJWT> {
+public class JwtTokenGenerator implements TokenGenerator<String, DecodedJWT> {
 
     private static final CoreProperties coreProperties = new CoreProperties();
 
     private static final String SECRET = coreProperties.getSecurity().getToken().getJwtSecret();
 
     @Override
-    public String generate(Integer authorization, int expireIn) throws Exception {
+    public String generate(String authorization, int expireIn) throws Exception {
         //token签发时间
         Date iatDate = new Date();
         //设置超时日期（是日期，不是时间）
@@ -42,7 +42,7 @@ public class JwtTokenGenerator implements TokenGenerator<Integer, DecodedJWT> {
         map.put("typ", "JWT");
         String token = JWT.create()
                           .withHeader(map)  //插入头部
-                          .withClaim(ServerConst.TOKEN_PAYLOAD_NAME, authorization)  //插入负载，即数据
+                          .withClaim(ServerConst.Token.TOKEN_PAYLOAD_NAME, authorization)  //插入负载，即数据
                           .withExpiresAt(expireTime)    //超期日期，必须大于签发日期
                           .withIssuedAt(iatDate)        //签发日期
                           .sign(Algorithm.HMAC256(SECRET));  //使用HMAC256算法

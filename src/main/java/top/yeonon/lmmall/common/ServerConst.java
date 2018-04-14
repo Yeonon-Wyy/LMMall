@@ -10,27 +10,29 @@ import java.util.Set;
  **/
 public interface ServerConst {
 
-    String SESSION_KEY_PREFIX = "SESSION_KEY_FOR_";
 
     String FORGET_PASSWORD_TOKEN_KEY = "FORGET_PASSWORD_TOKEN_KEY:";
-
-    /**
-     * 登录TOKEN的名称
-     */
-    String LMMALL_LOGIN_TOKEN_NAME = "login-token";
-
-    String LMMALL_REFRESH_TOKEN_NAME = "refresh-token";
-
-    /**
-     * 放入token payload 的信息
-     */
-    String TOKEN_PAYLOAD_NAME = "authorization";
-
 
     /**
      * 支付宝默认回调地址
      */
     String DEFAULT_ALIPAY_CALLBACK_ADDRESS = "http://www.lmmall.com/order/alipay_callback";
+
+    interface Token {
+        /**
+         * 登录TOKEN的名称
+         */
+        String LMMALL_LOGIN_TOKEN_NAME = "login-token";
+
+        String LMMALL_REFRESH_TOKEN_NAME = "refresh-token";
+
+        /**
+         * 放入token payload 的信息
+         */
+        String TOKEN_PAYLOAD_NAME = "authorization";
+
+        String REFRESH_TOKEN_PAYLOAD_NAME = "refresh_token_";
+    }
 
     interface ProductOrderBy {
         Set<String> ORDER_BY_PRICE = Sets.newHashSet("price_asc","price_desc");

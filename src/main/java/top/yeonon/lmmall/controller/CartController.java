@@ -35,8 +35,8 @@ public class CartController {
     @PostMapping("{productId}")
     @Consumer
     public ServerResponse<CartVo> addProductToCart(HttpServletRequest request, @PathVariable("productId") Integer productId, Integer count) {
-        Integer userId = getUserId(request);
-        return cartService.addProductToCart(userId, productId, count);
+        String userId = getUserId(request);
+        return cartService.addProductToCart(Integer.valueOf(userId), productId, count);
     }
 
     /**
@@ -45,8 +45,8 @@ public class CartController {
     @PutMapping("{productId}")
     @Consumer
     public ServerResponse<CartVo> updateProductToCart(HttpServletRequest request, @PathVariable("productId") Integer productId, Integer count) {
-        Integer userId = getUserId(request);
-        return cartService.updateProductToCart(userId, productId, count);
+        String userId = getUserId(request);
+        return cartService.updateProductToCart(Integer.valueOf(userId), productId, count);
     }
 
     /**
@@ -55,8 +55,8 @@ public class CartController {
     @DeleteMapping("{productIds}")
     @Consumer
     public ServerResponse<CartVo> deleteProductFromCart(HttpServletRequest request, @PathVariable("productIds") String productIds) {
-        Integer userId = getUserId(request);
-        return cartService.deleteProductFromCart(userId, productIds);
+        String userId = getUserId(request);
+        return cartService.deleteProductFromCart(Integer.valueOf(userId), productIds);
     }
 
     /**
@@ -65,8 +65,8 @@ public class CartController {
     @GetMapping
     @Consumer
     public ServerResponse<CartVo> getLists(HttpServletRequest request) {
-        Integer userId = getUserId(request);
-        return cartService.getLists(userId);
+        String userId = getUserId(request);
+        return cartService.getLists(Integer.valueOf(userId));
     }
 
     /**
@@ -75,8 +75,8 @@ public class CartController {
     @PostMapping("selectAll")
     @Consumer
     public ServerResponse<CartVo> selectAll(HttpServletRequest request) {
-        Integer userId = getUserId(request);
-        return cartService.selectOrUnSelect(userId, null, ServerConst.Cart.CHECKED);
+        String userId = getUserId(request);
+        return cartService.selectOrUnSelect(Integer.valueOf(userId), null, ServerConst.Cart.CHECKED);
     }
 
     /**
@@ -85,8 +85,8 @@ public class CartController {
     @PostMapping("unSelectAll")
     @Consumer
     public ServerResponse<CartVo> unSelectAll(HttpServletRequest request) {
-        Integer userId = getUserId(request);
-        return cartService.selectOrUnSelect(userId,null, ServerConst.Cart.UNCHECKED);
+        String userId = getUserId(request);
+        return cartService.selectOrUnSelect(Integer.valueOf(userId),null, ServerConst.Cart.UNCHECKED);
     }
 
     /**
@@ -95,8 +95,8 @@ public class CartController {
     @PostMapping("select/{productId}")
     @Consumer
     public ServerResponse<CartVo> SelectProduct(HttpServletRequest request, @PathVariable("productId") Integer productId) {
-        Integer userId = getUserId(request);
-        return cartService.selectOrUnSelect(userId,productId, ServerConst.Cart.CHECKED);
+        String userId = getUserId(request);
+        return cartService.selectOrUnSelect(Integer.valueOf(userId),productId, ServerConst.Cart.CHECKED);
     }
 
     /**
@@ -105,8 +105,8 @@ public class CartController {
     @PostMapping("unSelect/{productId}")
     @Consumer
     public ServerResponse<CartVo> unSelectProduct(HttpServletRequest request, @PathVariable("productId") Integer productId) {
-        Integer userId = getUserId(request);
-        return cartService.selectOrUnSelect(userId,productId, ServerConst.Cart.UNCHECKED);
+        String userId = getUserId(request);
+        return cartService.selectOrUnSelect(Integer.valueOf(userId),productId, ServerConst.Cart.UNCHECKED);
     }
 
     /**
@@ -115,14 +115,14 @@ public class CartController {
     @GetMapping("totalCount")
     @Consumer
     public ServerResponse<CartVo> getTotalCount(HttpServletRequest request) {
-        Integer userId = getUserId(request);
-        return cartService.getTotalCount(userId);
+        String userId = getUserId(request);
+        return cartService.getTotalCount(Integer.valueOf(userId));
     }
 
 
-    private Integer getUserId(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
+    private String getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.Token.TOKEN_PAYLOAD_NAME).asString();
     }
 
 }

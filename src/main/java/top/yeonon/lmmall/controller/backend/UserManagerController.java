@@ -39,15 +39,15 @@ public class UserManagerController {
     @DeleteMapping("/{id}")
     @Manager
     public ServerResponse deleteUser(HttpServletRequest request, @PathVariable("id") Integer id) {
-        Integer userId = getUserId(request);
-        if (userId.equals(id)) {
+        String userId = getUserId(request);
+        if (Integer.valueOf(userId).equals(id)) {
             return ServerResponse.createByErrorMessage("不要自杀！");
         }
         return userService.deleteUser(id);
     }
 
-    private Integer getUserId(HttpServletRequest request) {
-        String token = request.getHeader(ServerConst.LMMALL_LOGIN_TOKEN_NAME);
-        return JWT.decode(token).getClaim(ServerConst.TOKEN_PAYLOAD_NAME).asInt();
+    private String getUserId(HttpServletRequest request) {
+        String token = request.getHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME);
+        return JWT.decode(token).getClaim(ServerConst.Token.TOKEN_PAYLOAD_NAME).asString();
     }
 }
