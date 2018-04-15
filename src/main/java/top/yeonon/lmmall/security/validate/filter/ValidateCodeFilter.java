@@ -15,6 +15,8 @@ import java.io.IOException;
 /**
  * @Author yeonon
  * @date 2018/4/15 0015 13:16
+ *
+ * 验证码的filter，主要是为了校验验证码是否合法
  **/
 @Component
 public class ValidateCodeFilter implements Filter {
@@ -30,6 +32,9 @@ public class ValidateCodeFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
+        //Rest服务不同的请求方法会共用一个URL，这样会导致filter注册器注册过滤路径的时候造成麻烦
+        //例如我要拦截/token/ post请求，我需要在注册器中写明这个URL才能使用过滤器。但是我的GET /token/并不想使用过滤功能。
+        //而在注册器中无法配置POST方法还是GET方法，所以选择在这里判断请求方法的类型，来决定是否要校验验证码
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         if (httpServletRequest.getMethod().toUpperCase().equals("POST")) {
             //校验验证码是否合法
