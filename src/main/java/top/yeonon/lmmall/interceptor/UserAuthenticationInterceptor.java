@@ -101,7 +101,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
         if (jwt == null) {
             throw new JWTVerificationException("token过期或者错误");
         }
-        String userId = jwt.getClaim("authorization").asString();
+        String userId = jwt.getClaim(ServerConst.Token.TOKEN_PAYLOAD_NAME).asString();
         User user = (User) redisTemplate.opsForValue().get(userId);
 
         if (user == null) {
@@ -120,7 +120,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
         if (jwt == null) {
             throw new JWTVerificationException("token过期或者错误");
         }
-        String userId = jwt.getClaim("authorization").asString();
+        String userId = jwt.getClaim(ServerConst.Token.TOKEN_PAYLOAD_NAME).asString();
         User user = (User) redisTemplate.opsForValue().get(userId);
         if (user == null) {
             return false;

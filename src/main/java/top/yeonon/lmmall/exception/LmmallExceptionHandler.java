@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.yeonon.lmmall.common.ServerResponse;
+import top.yeonon.lmmall.security.validate.ValidateCode;
 
 import java.util.Map;
 
@@ -16,6 +17,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class LmmallExceptionHandler {
 
+
+    @ExceptionHandler(ValidateCodeException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ServerResponse processValidateCodeException(ValidateCodeException e) {
+        e.printStackTrace();
+        return ServerResponse.createByErrorMessage(e.toString());
+    }
 
     @ExceptionHandler(JWTVerificationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)

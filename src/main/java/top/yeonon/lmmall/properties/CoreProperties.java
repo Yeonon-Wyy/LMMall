@@ -19,4 +19,6 @@ public class CoreProperties {
     private FtpProperties ftp = new FtpProperties();
 
     private AlipayProperties alipay = new AlipayProperties();
+
+    private ValidateCodeProperties validateCode = new ValidateCodeProperties();
 }

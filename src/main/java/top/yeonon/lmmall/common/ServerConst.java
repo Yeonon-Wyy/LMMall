@@ -34,6 +34,12 @@ public interface ServerConst {
         String REFRESH_TOKEN_PAYLOAD_NAME = "refresh_token_";
     }
 
+    interface ValidateCode {
+        String VALIDATE_CODE_SUFFIX = "_validateCode";
+
+        String VALIDATE_CODE_PARAM_NAME = "validateCode";
+    }
+
     interface ProductOrderBy {
         Set<String> ORDER_BY_PRICE = Sets.newHashSet("price_asc","price_desc");
         Set<String> ORDER_BY_NAME = Sets.newHashSet("name_asc","name_desc");

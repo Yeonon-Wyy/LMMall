@@ -30,5 +30,6 @@ public class LmMallApplication {
 		public void addInterceptors(InterceptorRegistry registry) {
 			registry.addInterceptor(userAuthenticationInterceptor);
 		}
+
 	}
 }
