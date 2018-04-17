@@ -24,13 +24,6 @@ public class CloseOrderTask {
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
-//    @Scheduled(cron = "* 0/1 * * * ?")
-//    public void closeOrderV1() {
-//        log.info("开启定时关单");
-//        orderService.closeOrder(2);
-//        log.info("定时任务完成");
-//    }
-
     @Scheduled(cron = "0/5 * * * * ? ")
     public void closeOrderV2() {
         int timeOut = 50000;
@@ -62,13 +55,8 @@ public class CloseOrderTask {
     }
 
     private void closeOrder(int hour) {
-        boolean isTrue = redisTemplate.expire("CLOSE_ORDER_LOCK", 50000, TimeUnit.MILLISECONDS);
-        //orderService.closeOrder(hour);
-//        try {
-//            Thread.sleep(50);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        redisTemplate.expire("CLOSE_ORDER_LOCK", 50000, TimeUnit.MILLISECONDS);
+        orderService.closeOrder(hour);
         redisTemplate.delete("CLOSE_ORDER_LOCK");
         log.info(Thread.currentThread().getName() + "释放锁");
     }
