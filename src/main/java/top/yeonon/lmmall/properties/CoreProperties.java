@@ -21,4 +21,6 @@ public class CoreProperties {
     private AlipayProperties alipay = new AlipayProperties();
 
     private ValidateCodeProperties validateCode = new ValidateCodeProperties();
+
+    private TaskProperties task = new TaskProperties();
 }

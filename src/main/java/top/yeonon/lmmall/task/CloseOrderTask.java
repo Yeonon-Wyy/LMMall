@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import top.yeonon.lmmall.common.ServerConst;
+import top.yeonon.lmmall.properties.CoreProperties;
 import top.yeonon.lmmall.service.IOrderService;
 
 import javax.annotation.PreDestroy;
@@ -24,13 +26,16 @@ public class CloseOrderTask {
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
+    @Autowired
+    private CoreProperties coreProperties;
+
     @Scheduled(cron = "0/5 * * * * ? ")
-    public void closeOrderV2() {
-        int timeOut = 50000;
-        Boolean isSuccess = redisTemplate.opsForValue().setIfAbsent("CLOSE_ORDER_LOCK", String.valueOf(System.currentTimeMillis()) + timeOut);
+    public void closeOrderTask() {
+        int timeOut = coreProperties.getTask().getCloseOrderTimeOut();
+        Boolean isSuccess = redisTemplate.opsForValue().setIfAbsent(ServerConst.RedisLock.CLOSE_ORDER_LOCK_KEY, String.valueOf(System.currentTimeMillis()) + timeOut);
         if (isSuccess != null && isSuccess) {
             log.info("获取锁成功,开始执行任务");
-            closeOrder(2);
+            closeOrder(coreProperties.getTask().getCloseOrderTime());
         } else {
             //并不直接放弃，先获得设置锁的时候放入的时间戳
             String lockStr = (String) redisTemplate.opsForValue().get("CLOSE_ORDER_LOCK");
@@ -55,9 +60,9 @@ public class CloseOrderTask {
     }
 
     private void closeOrder(int hour) {
-        redisTemplate.expire("CLOSE_ORDER_LOCK", 50000, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(ServerConst.RedisLock.CLOSE_ORDER_LOCK_KEY, coreProperties.getTask().getCloseOrderTimeOut(), TimeUnit.MILLISECONDS);
         orderService.closeOrder(hour);
-        redisTemplate.delete("CLOSE_ORDER_LOCK");
+        redisTemplate.delete(ServerConst.RedisLock.CLOSE_ORDER_LOCK_KEY);
         log.info(Thread.currentThread().getName() + "释放锁");
     }
 

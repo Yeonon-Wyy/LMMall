@@ -173,4 +173,8 @@ public interface ServerConst {
             return desc;
         }
     }
+
+    interface RedisLock {
+        String CLOSE_ORDER_LOCK_KEY = "CLOSE_ORDER_LOCK_KEY";
+    }
 }
