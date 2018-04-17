@@ -29,4 +29,7 @@ public interface OrderRepository {
 
     List<Order> selectAllOrders();
 
+    List<Order> selectOrdersStatusByCreateTime(@Param("status") int status, @Param("orderDate") String orderDate);
+
+    int closeOrderByOrderId(Integer orderId);
 }

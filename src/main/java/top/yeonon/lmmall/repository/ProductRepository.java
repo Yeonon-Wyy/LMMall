@@ -25,4 +25,7 @@ public interface ProductRepository {
     List<Product> selectProducts();
 
     List<Product> searchProductsByNameAndId(@Param("productName") String productName, @Param("productId") Integer productId);
+
+    //因为这里有可能查不到任何stock(0也算是查到数据),如果返回值是int的话，mybatis就会报错，Integer就返回null
+    Integer selectStockByProductId(Integer productId);
 }

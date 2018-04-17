@@ -226,4 +226,22 @@
     FROM lmmall_order
     ORDER BY create_time desc
   </select>
+
+  <select id="selectOrdersStatusByCreateTime" resultMap="BaseResultMap" parameterType="map">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_order
+    WHERE status=#{status}
+    <![CDATA[
+    AND create_time <= #{orderDate}
+    ]]>
+    ORDER BY create_time DESC
+  </select>
+
+  <update id="closeOrderByOrderId" parameterType="int">
+    UPDATE
+    lmmall_order
+    SET status = 0
+    WHERE id = #{orderId}
+  </update>
 </mapper>

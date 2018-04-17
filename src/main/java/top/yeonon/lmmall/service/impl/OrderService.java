@@ -40,6 +40,8 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -531,6 +533,9 @@ public class OrderService implements IOrderService {
         return ServerResponse.createBySuccess(pageInfo);
     }
 
+    /**
+     * 发货
+     */
     @Override
     public ServerResponse manageSendGoods(Long orderNo) {
         Order order = orderRepository.selectOrderByOrderNo(orderNo);
@@ -549,9 +554,36 @@ public class OrderService implements IOrderService {
         return ServerResponse.createByErrorMessage("用户未付款或者该订单已经关闭，已发货等!");
     }
 
+    @Override
+    public void closeOrder(int hour) {
+        LocalDate orderDate = LocalDateTime.now().plusHours(-hour).toLocalDate();
+        List<Order> orderList = orderRepository.selectOrdersStatusByCreateTime(ServerConst.OrderStatus.PAID.getCode(),
+                orderDate.toString());
+
+        for (Order order : orderList) {
+            List<OrderItem> orderItemList = orderItemRepository.selectOrderItemsByOrderNo(order.getOrderNo());
+
+            for (OrderItem orderItem : orderItemList) {
+                Integer stock = productRepository.selectStockByProductId(orderItem.getProductId());
+
+                //说明该订单项中的商品已经被“删除”了
+                if (stock == null) {
+                    continue;
+                }
+
+                Product product = new Product();
+                product.setId(orderItem.getId());
+                product.setStock(orderItem.getQuantity() + stock);
+                productRepository.updateByPrimaryKeySelective(product);
+            }
+            orderRepository.closeOrderByOrderId(order.getId());
+            log.info("关闭订单号 : " + order.getOrderNo());
+        }
+    }
+
     private void dumpResponse(AlipayResponse response) {
         if (response != null) {
-            log.info(String.format("code:%s, msg:%s", response.getCode(), response.getMsg()));
+            log.info(String.format("code:%s, msg:%s ", response.getCode(), response.getMsg()));
             if (StringUtils.isNotEmpty(response.getSubCode())) {
                 log.info(String.format("subCode:%s, subMsg:%s", response.getSubCode(),
                         response.getSubMsg()));

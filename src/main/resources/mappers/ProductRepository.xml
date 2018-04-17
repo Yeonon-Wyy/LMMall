@@ -211,4 +211,14 @@
     </where>
 
   </select>
+
+  <select id="selectStockByProductId" parameterType="java.lang.Integer" resultType="int">
+    SELECT
+    stock
+    FROM lmmall_product
+    WHERE id=#{productId}
+    <!-- for update 在主键明确的情况下，只会是行锁，且需要InnoDB引擎-->
+    FOR UPDATE
+
+  </select>
 </mapper>
