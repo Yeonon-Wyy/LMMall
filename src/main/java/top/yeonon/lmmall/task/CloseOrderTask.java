@@ -46,6 +46,11 @@ public class CloseOrderTask {
     private void closeOrder(int hour) {
         boolean isTrue = redisTemplate.expire("CLOSE_ORDER_LOCK", 50000, TimeUnit.MILLISECONDS);
         //orderService.closeOrder(hour);
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         redisTemplate.delete("CLOSE_ORDER_LOCK");
         log.info(Thread.currentThread().getName() + "释放锁");
     }
