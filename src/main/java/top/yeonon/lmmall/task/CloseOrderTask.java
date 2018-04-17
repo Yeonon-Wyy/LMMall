@@ -31,10 +31,11 @@ public class CloseOrderTask {
 //        log.info("定时任务完成");
 //    }
 
-    @Scheduled(cron = "0 0/1 * * * ? ")
+    @Scheduled(cron = "0/5 * * * * ? ")
     public void closeOrderV2() {
         int timeOut = 50000;
-        if (redisTemplate.opsForValue().setIfAbsent("CLOSE_ORDER_LOCK", String.valueOf(System.currentTimeMillis()) + timeOut)) {
+        Boolean isSuccess = redisTemplate.opsForValue().setIfAbsent("CLOSE_ORDER_LOCK", String.valueOf(System.currentTimeMillis()) + timeOut);
+        if (isSuccess != null && isSuccess) {
             log.info("获取锁成功,开始执行任务");
             closeOrder(2);
         } else {
