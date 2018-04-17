@@ -17,6 +17,7 @@ import com.google.common.collect.Maps;
 import lombok.extern.java.Log;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -554,11 +555,13 @@ public class OrderService implements IOrderService {
         return ServerResponse.createByErrorMessage("用户未付款或者该订单已经关闭，已发货等!");
     }
 
+
+
     @Override
     public void closeOrder(int hour) {
-        LocalDate orderDate = LocalDateTime.now().plusHours(-hour).toLocalDate();
+        Date orderDate = DateUtils.addHours(new Date(), -hour);
         List<Order> orderList = orderRepository.selectOrdersStatusByCreateTime(ServerConst.OrderStatus.PAID.getCode(),
-                orderDate.toString());
+                DateFormatUtils.format(orderDate, "yyyy-MM-dd HH:mm:ss"));
 
         for (Order order : orderList) {
             List<OrderItem> orderItemList = orderItemRepository.selectOrderItemsByOrderNo(order.getOrderNo());
