@@ -12,7 +12,7 @@ import java.util.Date;
 @Component
 public class TestTask {
 
-    @Scheduled(cron = "0/5 * * * * ?")
+//    @Scheduled(cron = "0/5 * * * * ?")
     public void TimePrint() {
         System.out.println(new Date());
     }

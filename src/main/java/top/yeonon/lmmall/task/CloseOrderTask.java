@@ -31,7 +31,7 @@ public class CloseOrderTask {
 //        log.info("定时任务完成");
 //    }
 
-    @Scheduled(cron = "* 0/1 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ? ")
     public void closeOrderV2() {
         int timeOut = 50000;
         if (redisTemplate.opsForValue().setIfAbsent("CLOSE_ORDER_LOCK", String.valueOf(System.currentTimeMillis()) + timeOut)) {
