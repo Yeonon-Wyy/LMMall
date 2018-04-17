@@ -26,14 +26,14 @@ import java.lang.reflect.Method;
 @EnableCaching
 public class RedisCacheConfig extends CachingConfigurerSupport {
 
-    @Value("${spring.redis.host}")
-    private String host;
-
-    @Value("${spring.redis.port}")
-    private int port;
-
-    @Value("${spring.redis.timeout}")
-    private int timeout;
+//    @Value("${spring.redis.host}")
+//    private String host;
+//
+//    @Value("${spring.redis.port}")
+//    private int port;
+//
+//    @Value("${spring.redis.timeout}")
+//    private int timeout;
 
 
     @Autowired
