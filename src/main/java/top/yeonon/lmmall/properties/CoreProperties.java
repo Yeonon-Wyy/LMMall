@@ -23,4 +23,6 @@ public class CoreProperties {
     private ValidateCodeProperties validateCode = new ValidateCodeProperties();
 
     private TaskProperties task = new TaskProperties();
+
+    private OAuthProperties oauth = new OAuthProperties();
 }

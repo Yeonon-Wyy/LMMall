@@ -208,4 +208,11 @@
     <include refid="Base_Column_List" />
     FROM lmmall_user
   </select>
+
+  <select id="selectUserByUserName" resultMap="BaseResultMap" parameterType="string">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM lmmall_user
+    WHERE username=#{username}
+  </select>
 </mapper>

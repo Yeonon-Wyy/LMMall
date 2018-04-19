@@ -35,4 +35,6 @@ public interface UserRepository {
     int checkPhoneByUserId(@Param("phone") String phone, @Param("id") Integer id);
 
     List<User> selectUserList();
+
+    User selectUserByUserName(String username);
 }
