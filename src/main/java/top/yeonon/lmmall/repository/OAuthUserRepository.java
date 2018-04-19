@@ -18,5 +18,5 @@ public interface OAuthUserRepository {
 
     int updateByPrimaryKey(OAuthUser record);
 
-    OAuthUser selectByOAuthTypeAndOAuthId(@Param("oAuthType") String oAuthType, @Param("oAuthId") Integer oAuthId);
+    OAuthUser selectByOAuthTypeAndOAuthId(@Param("oAuthType") String oAuthType, @Param("oAuthId") String oAuthId);
 }

@@ -14,7 +14,7 @@ public class OAuthUser {
 
     private String oauthType;
 
-    private Integer oauthId;
+    private String oauthId;
 
     private Integer userId;
 }

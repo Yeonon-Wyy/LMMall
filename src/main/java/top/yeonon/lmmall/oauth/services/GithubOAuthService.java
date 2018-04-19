@@ -31,7 +31,7 @@ public class GithubOAuthService extends AbstractOAuthService {
         OAuthUser oAuthUser = new OAuthUser();
         oAuthUser.setOauthType(getoAuthType());
         Object result = JSON.parse(response.getBody());
-        oAuthUser.setOauthId(Integer.valueOf(JSONPath.eval(result, "$.id").toString()));
+        oAuthUser.setOauthId(JSONPath.eval(result, "$.id").toString());
         return oAuthUser;
     }
 }

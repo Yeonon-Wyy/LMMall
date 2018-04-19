@@ -10,7 +10,7 @@ import top.yeonon.lmmall.entity.OAuthUser;
  * @Author yeonon
  * @date 2018/4/19 0019 12:03
  **/
-public abstract class AbstractOAuthService implements OAuthService {
+public abstract class AbstractOAuthService implements CustomerOAuthService {
 
 
     private OAuthService oAuthService;
@@ -49,7 +49,8 @@ public abstract class AbstractOAuthService implements OAuthService {
         return oAuthService.getAuthorizationUrl(requestToken);
     }
 
-    public String getAuthorizeUrl() {
+    @Override
+    public String getAuthorizationUrl() {
         return this.authorizeUrl;
     }
 

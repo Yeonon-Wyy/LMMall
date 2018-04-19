@@ -15,6 +15,7 @@ import top.yeonon.lmmall.entity.OAuthUser;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.oauth.exception.OAuthException;
 import top.yeonon.lmmall.oauth.services.AbstractOAuthService;
+import top.yeonon.lmmall.oauth.services.CustomerOAuthService;
 import top.yeonon.lmmall.oauth.services.OAuthServices;
 import top.yeonon.lmmall.properties.CoreProperties;
 import top.yeonon.lmmall.repository.OAuthUserRepository;
@@ -60,14 +61,14 @@ public class OAuthController {
     @GetMapping("/{type}/callback")
     public ServerResponse oauthCallback(@PathVariable("type") String type, HttpServletResponse response,
                                         @RequestParam(value = "code", required = true) String code) {
-        AbstractOAuthService oAuthService = oAuthServices.getOAuthService(type);
+        CustomerOAuthService oAuthService = oAuthServices.getOAuthService(type);
         Token accessToken = oAuthService.getAccessToken(null, new Verifier(code));
         OAuthUser userInfo = oAuthService.getOAuthUser(accessToken);
         OAuthUser oAuthUser = oAuthUserRepository.selectByOAuthTypeAndOAuthId(userInfo.getOauthType(), userInfo.getOauthId());
         if (oAuthUser == null) {
             Map<String, String> result = Maps.newHashMap();
             result.put("oauthType", userInfo.getOauthType());
-            result.put("oauthId", userInfo.getOauthId().toString());
+            result.put("oauthId", userInfo.getOauthId());
             return ServerResponse.createBySuccess("请先去注册", result);
         }
         User user = userRepository.selectByPrimaryKey(oAuthUser.getUserId());
@@ -88,14 +89,21 @@ public class OAuthController {
         response.setHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME, sysAccessToken);
         response.setHeader(ServerConst.Token.LMMALL_REFRESH_TOKEN_NAME, refreshToken);
         user.setPassword(StringUtils.EMPTY);
-        return ServerResponse.createBySuccess(user);
+        return ServerResponse.createBySuccess("登录成功",user);
     }
 
     @PostMapping("register")
     public ServerResponse register(User user,
                                    @RequestParam(value = "oAuthType", required = false) String oAuthType,
-                                   @RequestParam(value = "oAuthId", required = true) Integer oAuthId) {
+                                   @RequestParam(value = "oAuthId", required = true) String oAuthId) {
 
         return oAuthServices.oauthRegister(oAuthType, oAuthId, user);
+    }
+
+    @PostMapping("/bind")
+    public ServerResponse bind(String username, String password,
+                               @RequestParam(value = "oAuthType", required = false) String oAuthType,
+                               @RequestParam(value = "oAuthId", required = true) String oAuthId) {
+        return oAuthServices.bind(username, password, oAuthType, oAuthId);
     }
 }

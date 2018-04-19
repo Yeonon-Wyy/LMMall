@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.OAuthUser;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.repository.OAuthUserRepository;
 import top.yeonon.lmmall.repository.UserRepository;
 import top.yeonon.lmmall.service.IUserService;
+import top.yeonon.lmmall.utils.MD5Utils;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +24,7 @@ import java.util.Map;
 public class OAuthServices {
 
     @Autowired
-    private List<AbstractOAuthService> oAuthServices;
+    private List<CustomerOAuthService> oAuthServices;
 
     @Autowired
     private UserRepository userRepository;
@@ -33,8 +35,8 @@ public class OAuthServices {
     @Autowired
     private IUserService userService;
 
-    public AbstractOAuthService getOAuthService(String type) {
-        for (AbstractOAuthService oAuthService : oAuthServices) {
+    public CustomerOAuthService getOAuthService(String type) {
+        for (CustomerOAuthService oAuthService : oAuthServices) {
             if (oAuthService.getoAuthType().equals(type)) {
                 return oAuthService;
             }
@@ -44,8 +46,8 @@ public class OAuthServices {
 
     public Map<String, String> getAuthorizationUrls() {
         Map<String, String> result = Maps.newHashMap();
-        for (AbstractOAuthService oAuthService : oAuthServices) {
-            result.put(oAuthService.getoAuthType(), oAuthService.getAuthorizeUrl());
+        for (CustomerOAuthService oAuthService : oAuthServices) {
+            result.put(oAuthService.getoAuthType(), oAuthService.getAuthorizationUrl());
         }
         return result;
     }
@@ -55,7 +57,7 @@ public class OAuthServices {
      * 第三方登录的跳转接口
      */
 
-    public ServerResponse oauthRegister(String oAuthType, Integer oAuthId, User user) {
+    public ServerResponse oauthRegister(String oAuthType, String oAuthId, User user) {
         OAuthUser oAuthUser = new OAuthUser();
         oAuthUser.setOauthType(oAuthType);
         oAuthUser.setOauthId(oAuthId);
@@ -70,5 +72,33 @@ public class OAuthServices {
             return ServerResponse.createByErrorMessage("数据库异常！");
         }
         return ServerResponse.createBySuccessMessage("注册成功");
+    }
+
+    /**
+     * 绑定接口
+     */
+    public ServerResponse bind(String username, String password, String oAuthType, String oAuthId) {
+        int rowCount = userRepository.checkUserField(username,
+                ServerConst.UserFieldValidate.USERNAME.getDesc());
+
+        if (rowCount <= 0) {
+            return ServerResponse.createByErrorMessage("该用户名不存在");
+        }
+
+        String newPassword = MD5Utils.MD5EncodeUtf8(password);
+        User user = userRepository.selectLogin(username, newPassword);
+        if (user == null) {
+            return ServerResponse.createByErrorMessage("用户名或者密码输入错误");
+        }
+
+        OAuthUser oAuthUser = new OAuthUser();
+        oAuthUser.setOauthId(oAuthId);
+        oAuthUser.setOauthType(oAuthType);
+        oAuthUser.setUserId(user.getId());
+        rowCount = oAuthUserRepository.insert(oAuthUser);
+        if (rowCount <= 0) {
+            return ServerResponse.createByErrorMessage("绑定失败");
+        }
+        return ServerResponse.createBySuccessMessage("绑定成功");
     }
 }

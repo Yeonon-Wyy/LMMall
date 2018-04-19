@@ -6,4 +6,5 @@ package top.yeonon.lmmall.oauth;
  **/
 public interface OAuthTypes {
     String GITHUB = "github";
+    String WEIXIN = "weixin";
 }
