@@ -53,7 +53,7 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //默认是isPass,因为这个拦截器是全局拦截器，会拦截所有的URL，但是并不是所有的URL都需要验证用户或者管理员
+            //默认是isPass,因为这个拦截器是全局拦截器，会拦截所有的URL，但是并不是所有的URL都需要验证用户或者管理员
         //所以不需要认证的默认就是通过的
         boolean isPass = true;
         //handler就是HandlerMethod，但是Spring传进来的是Object，需要转换才能调用API

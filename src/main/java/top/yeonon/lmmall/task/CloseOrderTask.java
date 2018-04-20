@@ -29,6 +29,11 @@ public class CloseOrderTask {
     @Autowired
     private CoreProperties coreProperties;
 
+    @PreDestroy
+    public void deleteLock() {
+        redisTemplate.delete(ServerConst.RedisLock.CLOSE_ORDER_LOCK_KEY);
+    }
+
     @Scheduled(cron = "0/5 * * * * ? ")
     public void closeOrderTask() {
         int timeOut = coreProperties.getTask().getCloseOrderTimeOut();
