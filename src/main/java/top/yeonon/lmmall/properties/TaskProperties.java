@@ -12,6 +12,6 @@ import lombok.Setter;
 public class TaskProperties {
     private int closeOrderTimeOut = 5000;
 
-    //未付款的订单的超时时间
+    //未付款的订单的超时时间,单位小时
     private int closeOrderTime = 2;
 }
