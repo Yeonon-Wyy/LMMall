@@ -17,7 +17,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class LmmallExceptionHandler {
 
-
     @ExceptionHandler(ValidateCodeException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ServerResponse processValidateCodeException(ValidateCodeException e) {

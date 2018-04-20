@@ -1,21 +1,7 @@
 package top.yeonon.lmmall.controller;
 
 import lombok.extern.java.Log;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
-import top.yeonon.lmmall.common.ServerConst;
-import top.yeonon.lmmall.common.ServerResponse;
-import top.yeonon.lmmall.entity.User;
-import top.yeonon.lmmall.service.ISessionService;
-import top.yeonon.lmmall.service.impl.SessionService;
-import top.yeonon.lmmall.token.TokenGenerator;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author yeonon
@@ -27,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class TestController {
 
 //    @Autowired
-//    private ISessionService sessionService;
+//    private ITokenService sessionService;
 //
 //    @Autowired
 //    private TokenGenerator<String> jwtTokenGenerator;

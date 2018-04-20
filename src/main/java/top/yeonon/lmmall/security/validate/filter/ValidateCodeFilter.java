@@ -30,7 +30,7 @@ public class ValidateCodeFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException, ValidateCodeException {
 
         //Rest服务不同的请求方法会共用一个URL，这样会导致filter注册器注册过滤路径的时候造成麻烦
         //例如我要拦截/token/ post请求，我需要在注册器中写明这个URL才能使用过滤器。但是我的GET /token/并不想使用过滤功能。

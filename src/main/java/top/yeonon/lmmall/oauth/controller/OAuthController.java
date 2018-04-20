@@ -13,18 +13,14 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.OAuthUser;
 import top.yeonon.lmmall.entity.User;
-import top.yeonon.lmmall.oauth.exception.OAuthException;
-import top.yeonon.lmmall.oauth.services.AbstractOAuthService;
 import top.yeonon.lmmall.oauth.services.CustomerOAuthService;
 import top.yeonon.lmmall.oauth.services.OAuthServices;
 import top.yeonon.lmmall.properties.CoreProperties;
 import top.yeonon.lmmall.repository.OAuthUserRepository;
 import top.yeonon.lmmall.repository.UserRepository;
-import top.yeonon.lmmall.service.IUserService;
 import top.yeonon.lmmall.token.TokenGenerator;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.Map;
 
 /**

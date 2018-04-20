@@ -7,7 +7,7 @@ import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.repository.UserRepository;
-import top.yeonon.lmmall.service.ISessionService;
+import top.yeonon.lmmall.service.ITokenService;
 import top.yeonon.lmmall.utils.MD5Utils;
 
 /**
@@ -15,7 +15,7 @@ import top.yeonon.lmmall.utils.MD5Utils;
  * @date 2018/4/3 0003 19:48
  **/
 @Service
-public class SessionService implements ISessionService {
+public class TokenService implements ITokenService {
 
 
     @Autowired

@@ -53,7 +53,6 @@ public class UserAuthenticationInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info("拦截器拦截，拦截的URL是 " + request.getRequestURI());
         //默认是isPass,因为这个拦截器是全局拦截器，会拦截所有的URL，但是并不是所有的URL都需要验证用户或者管理员
         //所以不需要认证的默认就是通过的
         boolean isPass = true;

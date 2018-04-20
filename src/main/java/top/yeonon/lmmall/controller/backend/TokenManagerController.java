@@ -11,14 +11,12 @@ import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.interceptor.authenticationAnnotation.Manager;
 import top.yeonon.lmmall.properties.CoreProperties;
-import top.yeonon.lmmall.service.ISessionService;
+import top.yeonon.lmmall.service.ITokenService;
 import top.yeonon.lmmall.service.IUserService;
 import top.yeonon.lmmall.token.TokenGenerator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author yeonon
@@ -30,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class TokenManagerController {
 
     @Autowired
-    private ISessionService sessionService;
+    private ITokenService sessionService;
 
     @Autowired
     private IUserService userService;
