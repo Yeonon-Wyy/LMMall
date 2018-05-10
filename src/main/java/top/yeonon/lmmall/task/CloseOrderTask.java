@@ -34,7 +34,7 @@ public class CloseOrderTask {
         redisTemplate.delete(ServerConst.RedisLock.CLOSE_ORDER_LOCK_KEY);
     }
 
-    @Scheduled(cron = "0 0/5 * * * ? ")
+//    @Scheduled(cron = "0 0/5 * * * ? ")
     public void closeOrderTask() {
         int timeOut = coreProperties.getTask().getCloseOrderTimeOut();
         Boolean isSuccess = redisTemplate.opsForValue().setIfAbsent(ServerConst.RedisLock.CLOSE_ORDER_LOCK_KEY, String.valueOf(System.currentTimeMillis()) + timeOut);
