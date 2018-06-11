@@ -9,6 +9,7 @@ import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
 import top.yeonon.lmmall.entity.User;
+import top.yeonon.lmmall.exception.ValidateCodeException;
 import top.yeonon.lmmall.interceptor.authenticationAnnotation.Consumer;
 import top.yeonon.lmmall.repository.UserRepository;
 import top.yeonon.lmmall.service.IUserService;
@@ -24,8 +25,6 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
-
 
     @Autowired
     private IUserService userService;

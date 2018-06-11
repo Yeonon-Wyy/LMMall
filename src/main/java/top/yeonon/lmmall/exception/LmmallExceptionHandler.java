@@ -17,24 +17,15 @@ import java.util.Map;
 @RestControllerAdvice
 public class LmmallExceptionHandler {
 
-    @ExceptionHandler(ValidateCodeException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ServerResponse processValidateCodeException(ValidateCodeException e) {
-        e.printStackTrace();
-        return ServerResponse.createByErrorMessage(e.toString());
-    }
-
     @ExceptionHandler(JWTVerificationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ServerResponse processJWTVerificationException(JWTVerificationException e) {
-        e.printStackTrace();
         return ServerResponse.createByErrorMessage(e.toString());
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ServerResponse processRuntimeException(RuntimeException e) {
-        e.printStackTrace();
         return ServerResponse.createByErrorMessage(e.toString());
     }
 }
