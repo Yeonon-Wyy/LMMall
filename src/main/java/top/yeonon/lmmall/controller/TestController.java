@@ -1,7 +1,13 @@
 package top.yeonon.lmmall.controller;
 
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.yeonon.lmmall.entity.Product;
+import top.yeonon.lmmall.repository.ProductElasticRespository;
+import top.yeonon.lmmall.repository.ProductRepository;
+
+import java.util.List;
 
 /**
  * @Author yeonon
@@ -66,4 +72,34 @@ public class TestController {
 //        User user = (User) redisTemplate.opsForValue().get(token);
 //        return ServerResponse.createBySuccess(user);
 //    }
+
+
+
+    @PostMapping("add")
+    public String add(Product product) {
+
+        return "ok";
+    }
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private ProductElasticRespository productElasticRespository;
+
+    @GetMapping("delete")
+    public void delete() {
+        productElasticRespository.deleteAll();
+    }
+
+    @GetMapping("add")
+    public void add() {
+        List<Product> productList = productRepository.selectProducts();
+        for (Product product : productList) {
+            productElasticRespository.save(product);
+        }
+    }
+
+
+
 }

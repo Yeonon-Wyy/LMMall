@@ -26,27 +26,23 @@ import java.lang.reflect.Method;
 @EnableCaching
 public class RedisCacheConfig extends CachingConfigurerSupport {
 
-//    @Value("${spring.redis.host}")
-//    private String host;
-//
-//    @Value("${spring.redis.port}")
-//    private int port;
-//
-//    @Value("${spring.redis.timeout}")
-//    private int timeout;
-
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
     //缓存管理器
-    @Bean
-    @Override
-    public CacheManager cacheManager() {
-        RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
-        cacheManager.setDefaultExpiration(1800);
-        return cacheManager;
-    }
+
+//    @Autowired
+//    private RedisConnectionFactory redisConnectionFactory;
+//
+//    @Bean
+//    @Override
+//    public CacheManager cacheManager() {
+//
+//        RedisCacheManager redisCacheManager = RedisCacheManager.builder(redisConnectionFactory).build();
+//        redisCacheManager.
+//        return cacheManager;
+//    }
 
 
     @Override

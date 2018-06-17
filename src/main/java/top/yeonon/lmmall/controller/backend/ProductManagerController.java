@@ -3,6 +3,7 @@ package top.yeonon.lmmall.controller.backend;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.yeonon.lmmall.common.ResponseCode;
@@ -16,6 +17,7 @@ import top.yeonon.lmmall.service.IFileService;
 import top.yeonon.lmmall.service.IProductService;
 import top.yeonon.lmmall.service.IUserService;
 import top.yeonon.lmmall.vo.ProductDetailsVo;
+import top.yeonon.lmmall.vo.ProductListVo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -74,9 +76,9 @@ public class ProductManagerController {
      */
     @GetMapping("search")
     @Manager
-    public ServerResponse<PageInfo> search(String productName, Integer productId,
-                                 @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-                                 @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+    public ServerResponse<Page<ProductListVo>> search(String productName, Integer productId,
+                                                      @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                                                      @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         return productService.search(productName, productId, pageNum, pageSize);
     }
 
