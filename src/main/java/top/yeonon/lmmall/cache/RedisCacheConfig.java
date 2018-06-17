@@ -26,25 +26,6 @@ import java.lang.reflect.Method;
 @EnableCaching
 public class RedisCacheConfig extends CachingConfigurerSupport {
 
-
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-
-    //缓存管理器
-
-//    @Autowired
-//    private RedisConnectionFactory redisConnectionFactory;
-//
-//    @Bean
-//    @Override
-//    public CacheManager cacheManager() {
-//
-//        RedisCacheManager redisCacheManager = RedisCacheManager.builder(redisConnectionFactory).build();
-//        redisCacheManager.
-//        return cacheManager;
-//    }
-
-
     @Override
     @Bean
     public KeyGenerator keyGenerator() {

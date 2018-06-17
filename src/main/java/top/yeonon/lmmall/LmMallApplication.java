@@ -8,6 +8,8 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import top.yeonon.lmmall.interceptor.UserAuthenticationInterceptor;
 
@@ -24,7 +26,7 @@ public class LmMallApplication {
 
 
 	@Configuration
-	static class WebMvcConfigurer extends WebMvcConfigurerAdapter {
+	static class WebMvcConfigurer extends WebMvcConfigurationSupport {
 
 		@Autowired
 		private UserAuthenticationInterceptor userAuthenticationInterceptor;
