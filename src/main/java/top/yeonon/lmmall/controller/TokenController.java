@@ -17,6 +17,7 @@ import top.yeonon.lmmall.service.ITokenService;
 import top.yeonon.lmmall.token.TokenGenerator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author yeonon
@@ -58,7 +59,9 @@ public class TokenController {
                 log.info("生成jwt失败");
                 return ServerResponse.createByErrorMessage("登录失败");
             }
-            redisTemplate.opsForValue().set(user.getId().toString(), user);
+            redisTemplate.opsForValue().set(user.getId().toString(), user,
+                    coreProperties.getSecurity().getToken().getRefreshTokenExpireIn(), TimeUnit.SECONDS);
+
             response.setHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME, accessToken);
             response.setHeader(ServerConst.Token.LMMALL_REFRESH_TOKEN_NAME, refreshToken);
         }

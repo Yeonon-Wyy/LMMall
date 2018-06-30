@@ -10,6 +10,8 @@ import top.yeonon.lmmall.entity.OAuthUser;
  **/
 public interface CustomerOAuthService extends OAuthService {
     String getoAuthType();
+
     String getAuthorizationUrl();
+
     OAuthUser getOAuthUser(Token accessToken);
 }

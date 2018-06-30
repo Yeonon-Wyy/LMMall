@@ -66,6 +66,7 @@ public class OAuthConfig {
 
     @Bean
     public CustomerOAuthService weixinOAuthService(){
-        return new WeixinOAuthService(new WeixinApi(),new org.scribe.model.OAuthConfig(weixinClientId, weixinClientSecret, String.format(WEIXIN_CALLBACK_URL, OAuthTypes.WEIXIN), SignatureType.Header, "snsapi_login", null));
+        return new WeixinOAuthService(new WeixinApi(),
+                new org.scribe.model.OAuthConfig(weixinClientId, weixinClientSecret, String.format(WEIXIN_CALLBACK_URL, OAuthTypes.WEIXIN), SignatureType.Header, "snsapi_login", null));
     }
 }
