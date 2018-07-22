@@ -32,9 +32,11 @@ public class TokenService implements ITokenService {
 
         String newPassword = MD5Utils.MD5EncodeUtf8(password);
         User user = userRepository.selectLogin(username, newPassword);
+
         if (user == null) {
             return ServerResponse.createByErrorMessage("用户名或者密码输入错误");
         }
+
         user.setPassword(StringUtils.EMPTY);
         return ServerResponse.createBySuccess("登录成功", user);
     }
