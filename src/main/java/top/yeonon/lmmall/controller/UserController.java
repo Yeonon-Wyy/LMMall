@@ -29,9 +29,6 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-
     /**
      * 注册用户接口
      */
@@ -68,17 +65,13 @@ public class UserController {
     @Consumer
     public ServerResponse updateUserInfo(HttpServletRequest request, @PathVariable("username") String username, User user) {
         String userId = getUserId(request);
-        User currentUser = (User) redisTemplate.opsForValue().get(userId);
+        User currentUser = userService.getUserInfo(Integer.valueOf(userId)).getData();
         if (!StringUtils.equals(username, currentUser.getUsername())) {
             return ServerResponse.createByErrorCodeMessage(ResponseCode.INVALID_PARAMETER.getCode(),
                     "参数错误，有可能是黑客攻击！");
         }
         user.setId(currentUser.getId());
-        ServerResponse serverResponse = userService.updateUserInfo(user);
-        if (serverResponse.isSuccess()) {
-            redisTemplate.delete(userId);
-        }
-        return serverResponse;
+        return userService.updateUserInfo(user);
     }
 
     private String getUserId(HttpServletRequest request) {

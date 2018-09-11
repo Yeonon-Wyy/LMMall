@@ -20,6 +20,8 @@ public interface IUserService {
 
     ServerResponse updateUserInfo(User user);
 
+    ServerResponse<User> getUserInfo(Integer userId);
+
     /**
      * 后台管理的方法
      */

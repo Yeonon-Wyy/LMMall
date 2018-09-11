@@ -14,6 +14,7 @@ import top.yeonon.lmmall.entity.User;
 import top.yeonon.lmmall.interceptor.authenticationAnnotation.Consumer;
 import top.yeonon.lmmall.properties.CoreProperties;
 import top.yeonon.lmmall.service.ITokenService;
+import top.yeonon.lmmall.service.IUserService;
 import top.yeonon.lmmall.token.TokenGenerator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +36,7 @@ public class TokenController {
     private TokenGenerator<String, DecodedJWT> jwtTokenGenerator;
 
     @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
+    private IUserService userService;
 
     @Autowired
     private CoreProperties coreProperties;
@@ -59,8 +60,6 @@ public class TokenController {
                 log.info("生成jwt失败");
                 return ServerResponse.createByErrorMessage("登录失败");
             }
-            redisTemplate.opsForValue().set(user.getId().toString(), user,
-                    coreProperties.getSecurity().getToken().getRefreshTokenExpireIn(), TimeUnit.SECONDS);
 
             response.setHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME, accessToken);
             response.setHeader(ServerConst.Token.LMMALL_REFRESH_TOKEN_NAME, refreshToken);
@@ -75,8 +74,6 @@ public class TokenController {
     @DeleteMapping
     @Consumer
     public ServerResponse logout(HttpServletRequest request) {
-        String userId = getUserId(request);
-        redisTemplate.delete(userId);
         return ServerResponse.createBySuccessMessage("登出成功!");
     }
 
@@ -87,8 +84,7 @@ public class TokenController {
     @Consumer
     public ServerResponse<User> getUserInfo(HttpServletRequest request) {
         String userId = getUserId(request);
-        User currentUser = (User) redisTemplate.opsForValue().get(userId);
-        return ServerResponse.createBySuccess(currentUser);
+        return userService.getUserInfo(Integer.valueOf(userId));
     }
 
     @GetMapping("refresh")

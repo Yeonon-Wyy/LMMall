@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import top.yeonon.lmmall.common.ServerConst;
 import top.yeonon.lmmall.common.ServerResponse;
@@ -35,9 +34,6 @@ public class TokenManagerController {
     private IUserService userService;
 
     @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-
-    @Autowired
     private TokenGenerator<String, DecodedJWT> jwtTokenGenerator;
 
     @Autowired
@@ -60,8 +56,6 @@ public class TokenManagerController {
                 } catch (Exception e) {
                     return ServerResponse.createByErrorMessage("登录失败");
                 }
-                redisTemplate.opsForValue().set(user.getId().toString(), user,
-                        coreProperties.getSecurity().getToken().getRefreshTokenExpireIn(), TimeUnit.SECONDS);
 
                 response.setHeader(ServerConst.Token.LMMALL_LOGIN_TOKEN_NAME, accessToken);
                 response.setHeader(ServerConst.Token.LMMALL_REFRESH_TOKEN_NAME, refreshToken);
@@ -76,8 +70,6 @@ public class TokenManagerController {
     @DeleteMapping
     @Manager
     public ServerResponse logout(HttpServletRequest request) {
-        String userId = getUserId(request);
-        redisTemplate.delete(userId);
         return ServerResponse.createBySuccessMessage("登出成功!");
     }
 

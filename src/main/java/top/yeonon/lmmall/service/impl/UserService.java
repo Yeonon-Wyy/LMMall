@@ -4,7 +4,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import top.yeonon.lmmall.common.ResponseCode;
 import top.yeonon.lmmall.common.ServerConst;
@@ -118,6 +117,16 @@ public class UserService implements IUserService {
         redisTemplate.delete(ServerConst.FORGET_PASSWORD_TOKEN_KEY + username);
         return ServerResponse.createBySuccessMessage("修改密码成功");
 
+    }
+
+    @Override
+    public ServerResponse<User> getUserInfo(Integer userId) {
+        User user = userRepository.selectByPrimaryKey(userId);
+        if (user == null) {
+            return ServerResponse.createByErrorMessage("不存在该用户");
+        }
+        user.setPassword("");
+        return ServerResponse.createBySuccess(user);
     }
 
     @Override
