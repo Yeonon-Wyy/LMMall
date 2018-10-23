@@ -18,9 +18,9 @@ import java.util.UUID;
  * @Author yeonon
  * @date 2018/4/6 0006 17:55
  **/
-@Service
+@Service("fileService")
 @Log
-public class FileService implements IFileService {
+public class FileServiceImpl implements IFileService {
 
     //上传文件
     @Override

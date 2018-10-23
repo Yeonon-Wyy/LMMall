@@ -29,8 +29,8 @@ import java.util.List;
  * @Author yeonon
  * @date 2018/4/7 0007 18:28
  **/
-@Service
-public class CartService implements ICartService {
+@Service("cartService")
+public class CartServiceImpl implements ICartService {
 
     @Autowired
     private CartRepository cartRepository;

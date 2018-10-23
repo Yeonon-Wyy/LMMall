@@ -89,7 +89,7 @@ public class CartController {
      */
     @PostMapping("select/{productId}")
     @Consumer
-    public ServerResponse<CartVo> SelectProduct(HttpServletRequest request, @PathVariable("productId") Integer productId) {
+    public ServerResponse<CartVo> selectProduct(HttpServletRequest request, @PathVariable("productId") Integer productId) {
         String userId = getUserId(request);
         return cartService.selectOrUnSelect(Integer.valueOf(userId),productId, ServerConst.Cart.CHECKED);
     }

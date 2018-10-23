@@ -9,7 +9,7 @@ import top.yeonon.security.oauth.api.GithubApi;
 import top.yeonon.security.oauth.api.WeixinApi;
 import top.yeonon.security.oauth.services.CustomerOAuthService;
 import top.yeonon.security.oauth.services.GithubOAuthService;
-import top.yeonon.security.oauth.services.WeixinOAuthService;
+import top.yeonon.security.oauth.services.WeixinOAuthServiceImpl;
 
 
 /**
@@ -64,7 +64,7 @@ public class OAuthConfig {
 
     @Bean
     public CustomerOAuthService weixinOAuthService(){
-        return new WeixinOAuthService(new WeixinApi(),
+        return new WeixinOAuthServiceImpl(new WeixinApi(),
                 new org.scribe.model.OAuthConfig(weixinClientId, weixinClientSecret, String.format(WEIXIN_CALLBACK_URL, OAuthTypes.WEIXIN), SignatureType.Header, "snsapi_login", null));
     }
 }

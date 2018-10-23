@@ -24,11 +24,12 @@ public class CartProductVo implements Serializable {
     private String productName;
     private String productSubtitle;
     private String productMainImage;
-    private BigDecimal ProductPrice;
+    private BigDecimal productPrice;
     private Integer productStatus;
-    private BigDecimal ProductTotalPrice;
+    private BigDecimal productTotalPrice;
     private Integer productStock;
     private Integer productChecked;
 
-    private String limitQuantity;       //限制数量的返回结果
+    //限制数量的返回结果
+    private String limitQuantity;
 }

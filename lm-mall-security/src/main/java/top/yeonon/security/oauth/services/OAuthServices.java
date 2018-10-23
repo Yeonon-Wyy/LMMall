@@ -84,7 +84,7 @@ public class OAuthServices {
             return ServerResponse.createByErrorMessage("该用户名不存在");
         }
 
-        String newPassword = MD5Utils.MD5EncodeUtf8(password);
+        String newPassword = MD5Utils.md5EncodeUTF8(password);
         User user = userRepository.selectLogin(username, newPassword);
         if (user == null) {
             return ServerResponse.createByErrorMessage("用户名或者密码输入错误");

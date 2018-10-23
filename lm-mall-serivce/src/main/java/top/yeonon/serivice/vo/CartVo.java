@@ -20,6 +20,7 @@ import java.util.List;
 public class CartVo implements Serializable {
     private List<CartProductVo> cartProductVoList;
     private BigDecimal cartTotalPrice;
-    private boolean allChecked;             //是否都勾选
+    //是否都勾选
+    private boolean allChecked;
     private String imageHost;
 }

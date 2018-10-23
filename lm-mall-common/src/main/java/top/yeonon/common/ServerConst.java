@@ -62,6 +62,7 @@ public interface ServerConst {
     }
 
     enum PayPlatform {
+        //支付宝平台
         ALIPY(0, "支付宝");
 
         private int code;
@@ -82,11 +83,17 @@ public interface ServerConst {
     }
 
     enum OrderStatus {
+        //已取消状态
         CANCELED(0, "已取消"),
+        //未支付状态
         NO_PAY(10, "未支付"),
+        //已付款状态
         PAID(20, "已付款"),
+        //已发货状态
         SHIPPED(40, "已发货"),
+        //订单完成状态
         ORDER_SUCCESS(50, "订单完成"),
+        //订单关闭状态
         ORDER_CLOSE(60, "订单关闭");
 
         private int code;
@@ -116,6 +123,7 @@ public interface ServerConst {
     }
 
     enum ProductStatus {
+        //商品处于上架状态
         ON_SELL(1, "在售状态");
 
         private Integer code;
@@ -135,8 +143,11 @@ public interface ServerConst {
     }
 
     enum UserFieldValidate {
+        //用户的email信息
         EMAIL("email"),
+        //用户的phone信息
         PHONE("phone"),
+        //用户的username信息
         USERNAME("username");
 
         private String desc;
@@ -154,7 +165,9 @@ public interface ServerConst {
      * 用户角色枚举
      */
     enum Role {
+        //管理员
         ADMIN(0, "ADMIN"),
+        //普通用户
         USER(1, "USER");
 
         private int code;

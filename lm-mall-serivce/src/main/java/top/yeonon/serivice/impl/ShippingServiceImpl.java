@@ -18,8 +18,8 @@ import java.util.List;
  * @Author yeonon
  * @date 2018/4/8 0008 15:13
  **/
-@Service
-public class ShippingService implements IShippingService {
+@Service("ShippingService")
+public class ShippingServiceImpl implements IShippingService {
 
     @Autowired
     private ShippingRepository shippingRepository;

@@ -52,10 +52,10 @@ import java.util.Random;
  * @Author yeonon
  * @date 2018/4/8 0008 20:36
  **/
-@Service
-public class OrderService implements IOrderService {
+@Service("orderService")
+public class OrderServiceImpl implements IOrderService {
 
-    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
     private OrderRepository orderRepository;

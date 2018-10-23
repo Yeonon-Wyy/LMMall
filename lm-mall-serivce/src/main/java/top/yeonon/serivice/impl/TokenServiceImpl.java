@@ -15,7 +15,7 @@ import top.yeonon.serivice.ITokenService;
  * @date 2018/4/3 0003 19:48
  **/
 @Service("tokenService")
-public class TokenService implements ITokenService {
+public class TokenServiceImpl implements ITokenService {
 
 
     @Autowired
@@ -30,7 +30,7 @@ public class TokenService implements ITokenService {
             return ServerResponse.createByErrorMessage("该用户名不存在");
         }
 
-        String newPassword = MD5Utils.MD5EncodeUtf8(password);
+        String newPassword = MD5Utils.md5EncodeUTF8(password);
         User user = userRepository.selectLogin(username, newPassword);
 
         if (user == null) {

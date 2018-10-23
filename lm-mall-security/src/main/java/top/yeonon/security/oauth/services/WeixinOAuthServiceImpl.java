@@ -13,13 +13,13 @@ import top.yeonon.entity.OAuthUser;
  * @Author yeonon
  * @date 2018/4/19 0019 15:19
  **/
-public class WeixinOAuthService extends OAuth20ServiceImpl implements CustomerOAuthService {
+public class WeixinOAuthServiceImpl extends OAuth20ServiceImpl implements CustomerOAuthService {
 
     private final DefaultApi20 api;
     private final OAuthConfig oAuthConfig;
     private final String authorizationUrl;
 
-    public WeixinOAuthService(DefaultApi20 api, OAuthConfig config) {
+    public WeixinOAuthServiceImpl(DefaultApi20 api, OAuthConfig config) {
         super(api, config);
         this.api = api;
         this.oAuthConfig = config;

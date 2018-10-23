@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
  * @Author yeonon
  * @date 2018/4/2 0002 19:34
  **/
-@Service
-public class UserService implements IUserService {
+@Service("userService")
+public class UserServiceImpl implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
@@ -55,7 +55,7 @@ public class UserService implements IUserService {
         }
 
         user.setRole(ServerConst.Role.USER.getCode());
-        user.setPassword(MD5Utils.MD5EncodeUtf8(user.getPassword()));
+        user.setPassword(MD5Utils.md5EncodeUTF8(user.getPassword()));
         int resultCount = userRepository.insert(user);
         if (resultCount <= 0) {
             return ServerResponse.createByErrorMessage("注册用户失败，可能是服务器故障");
@@ -110,7 +110,7 @@ public class UserService implements IUserService {
             return ServerResponse.createByErrorMessage("Token不正确！");
         }
 
-        String md5Password = MD5Utils.MD5EncodeUtf8(newPassword);
+        String md5Password = MD5Utils.md5EncodeUTF8(newPassword);
         int rowCount = userRepository.updatePassword(username, md5Password);
         if (rowCount <= 0) {
             return ServerResponse.createByErrorMessage("修改密码失败");

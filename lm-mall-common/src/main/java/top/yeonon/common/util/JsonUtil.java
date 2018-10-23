@@ -23,7 +23,7 @@ public class JsonUtil {
 
     private static final Logger log = LoggerFactory.getLogger(JsonUtil.class);
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     static {
         //所有字段都参与序列化

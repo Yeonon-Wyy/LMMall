@@ -40,8 +40,8 @@ import java.util.List;
  * @Author yeonon
  * @date 2018/4/5 0005 16:03
  **/
-@Service
-public class ProductService implements IProductService {
+@Service("productService")
+public class ProductServiceImpl implements IProductService {
 
     @Autowired
     private ProductRepository productRepository;

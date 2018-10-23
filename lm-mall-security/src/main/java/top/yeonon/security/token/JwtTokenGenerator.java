@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 public class JwtTokenGenerator implements TokenGenerator<String, DecodedJWT> {
 
-    private static final CoreProperties coreProperties = new CoreProperties();
+    private static CoreProperties coreProperties = new CoreProperties();
 
     private static final String SECRET = coreProperties.getSecurity().getToken().getJwtSecret();
 

@@ -14,13 +14,13 @@ import java.security.MessageDigest;
  **/
 public final class MD5Utils {
 
-    private final static CoreProperties coreProperties;
+    private static CoreProperties coreProperties;
 
     static {
         coreProperties = new CoreProperties();
     }
 
-    private static String byteArrayToHexString(byte b[]) {
+    private static String byteArrayToHexString(byte[] b) {
         StringBuffer resultSb = new StringBuffer();
         for (int i = 0; i < b.length; i++) {
             resultSb.append(byteToHexString(b[i]));
@@ -36,17 +36,17 @@ public final class MD5Utils {
         }
         int d1 = n / 16;
         int d2 = n % 16;
-        return hexDigits[d1] + hexDigits[d2];
+        return HEX_DIGITS[d1] + HEX_DIGITS[d2];
     }
 
     /**
      * 返回大写MD5
      *
      */
-    private static String MD5Encode(String origin, String charsetname) {
+    private static String md5Encode(String origin, String charsetname) {
         String resultString = null;
         try {
-            resultString = new String(origin);
+            resultString = origin;
             MessageDigest md = MessageDigest.getInstance("MD5");
             if (charsetname == null || "".equals(charsetname)) {
                 resultString = byteArrayToHexString(md.digest(resultString.getBytes()));
@@ -58,12 +58,12 @@ public final class MD5Utils {
         return resultString.toUpperCase();
     }
 
-    public static String MD5EncodeUtf8(String origin) {
+    public static String md5EncodeUTF8(String origin) {
         origin = origin + coreProperties.getSecurity().getMd5Salt();
-        return MD5Encode(origin, "utf-8");
+        return md5Encode(origin, "utf-8");
     }
 
 
-    private static final String hexDigits[] = {"0", "1", "2", "3", "4", "5",
+    private static final String[] HEX_DIGITS = {"0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
 }

@@ -20,8 +20,8 @@ import java.util.Set;
  * @Author yeonon
  * @date 2018/4/5 0005 14:03
  **/
-@Service
-public class CategoryService implements ICategoryService {
+@Service("categoryService")
+public class CategoryServiceImpl implements ICategoryService {
 
 
     @Autowired

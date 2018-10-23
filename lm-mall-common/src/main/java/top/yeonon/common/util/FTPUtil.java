@@ -18,8 +18,8 @@ import java.util.List;
 @Log
 public class FTPUtil {
 
-    private final static CoreProperties coreProperties;
-    private final static FTPClient ftpClient;
+    private static CoreProperties coreProperties;
+    private static FTPClient ftpClient;
 
 
     static {
@@ -27,9 +27,9 @@ public class FTPUtil {
         ftpClient = new FTPClient();
     }
 
-    private final static String ip = coreProperties.getFtp().getIp();
-    private final static String username = coreProperties.getFtp().getUsername();
-    private final static String password = coreProperties.getFtp().getPassword();
+    private final static String IP = coreProperties.getFtp().getIp();
+    private final static String USERNAME = coreProperties.getFtp().getUsername();
+    private final static String PASSWORD = coreProperties.getFtp().getPassword();
 
 
     //上传文件API
@@ -67,8 +67,8 @@ public class FTPUtil {
     private static boolean isConnect() {
         boolean isSuccess = true;
         try {
-            ftpClient.connect(ip);
-            isSuccess = ftpClient.login(username, password);
+            ftpClient.connect(IP);
+            isSuccess = ftpClient.login(USERNAME, PASSWORD);
         } catch (IOException e) {
             isSuccess = false;
             log.info("连接FTP服务器失败，请检查FTP服务器");
