@@ -1,8 +1,6 @@
 package top.yeonon.repository;
 
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-
-
 import org.springframework.stereotype.Repository;
 import top.yeonon.entity.Product;
 

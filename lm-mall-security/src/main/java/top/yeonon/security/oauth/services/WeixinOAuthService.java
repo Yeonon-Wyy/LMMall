@@ -32,7 +32,9 @@ public class WeixinOAuthService extends OAuth20ServiceImpl implements CustomerOA
         request.addQuerystringParameter("appid", oAuthConfig.getApiKey());
         request.addQuerystringParameter("secret", oAuthConfig.getApiSecret());
         request.addQuerystringParameter(OAuthConstants.CODE, verifier.getValue());
-        if (oAuthConfig.hasScope()) request.addQuerystringParameter(OAuthConstants.SCOPE, oAuthConfig.getScope());
+        if (oAuthConfig.hasScope()) {
+            request.addQuerystringParameter(OAuthConstants.SCOPE, oAuthConfig.getScope());
+        }
         Response response = request.send();
         Object result = JSON.parse(response.getBody());
         return new Token(JSONPath.eval(result, "$.access_token").toString(),"", response.getBody());

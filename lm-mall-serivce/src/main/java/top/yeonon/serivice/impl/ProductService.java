@@ -126,10 +126,11 @@ public class ProductService implements IProductService {
             if (ServerConst.ProductOrderBy.ORDER_BY_PRICE.contains(orderBy)) {
                 String[] orderByArray = StringUtils.split(orderBy, "_");
                 if (orderByArray.length == 2) {
-                    if ("desc".equals(orderByArray[1]))
+                    if ("desc".equals(orderByArray[1])) {
                         searchQuery.addSort(Sort.by(Sort.Order.desc(orderByArray[0])));
-                    else
+                    } else {
                         searchQuery.addSort(Sort.by(Sort.Order.asc(orderByArray[0])));
+                    }
                 }
             }
         }
@@ -137,7 +138,6 @@ public class ProductService implements IProductService {
 
         //获取满足条件的商品
         //这里需要注意，categoryIdList不可能是null，Mybatis返回的集合类型不可能是null，如果没有数据会返回空的集合
-        //List<Product> productList = productRepository.selectProductsByNameAndProductIds(keyword, categoryIdList);
 
         Page<ProductListVo> productListVos = productElasticRespository.search(searchQuery)
                 .map(this::assembleProductListVo);
@@ -227,9 +227,9 @@ public class ProductService implements IProductService {
     @SuppressWarnings("unchecked")
     public ServerResponse<Page<ProductListVo>> search(String productName, Integer productId, Integer pageNum, Integer pageSize) {
         //如果不传入ID，这个参数就是null，elasticSearch不允许为null,故设为-1
-        if (productId == null)
+        if (productId == null) {
             productId = -1;
-        //List<Product> productList = productRepository.searchProductsByNameAndId(productName, productId);
+        }
 
         QueryBuilder queryBuilder = QueryBuilders.boolQuery()
                 .must(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("name", productName))

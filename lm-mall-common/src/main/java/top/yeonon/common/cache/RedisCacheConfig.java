@@ -34,7 +34,9 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
 
             sb.append(value[0]);
             for (Object param : params) {
-                if (param == null) continue;
+                if (param == null) {
+                    continue;
+                }
                 sb.append(":" + param.toString());
             }
             return sb.toString();

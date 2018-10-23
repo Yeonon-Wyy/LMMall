@@ -54,10 +54,12 @@ public abstract class AbstractOAuthService implements CustomerOAuthService {
         return this.authorizeUrl;
     }
 
+    @Override
     public String getoAuthType() {
         return this.oAuthType;
     }
 
+    @Override
     public abstract OAuthUser getOAuthUser(Token accessToken);
 
 

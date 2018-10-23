@@ -44,7 +44,7 @@ public class ValidateCodeFilter implements Filter {
         //而在注册器中无法配置POST方法还是GET方法，所以选择在这里判断请求方法的类型，来决定是否要校验验证码
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         try {
-            if (httpServletRequest.getMethod().toUpperCase().equals("POST")) {
+            if ("POST".equals(httpServletRequest.getMethod().toUpperCase())) {
                 //校验验证码是否合法
                 //Post方法才会校验
                 validate(servletRequest);
