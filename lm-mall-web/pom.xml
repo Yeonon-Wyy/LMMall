@@ -17,6 +17,8 @@
             <artifactId>lm-mall-serivce</artifactId>
             <version>1.0</version>
         </dependency>
+
+
         <dependency>
             <groupId>top.yeonon</groupId>
             <artifactId>lm-mall-security</artifactId>
@@ -25,5 +27,19 @@
 
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>top.yeonon.LMMallApplication</mainClass>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+    </build>
 
 </project>

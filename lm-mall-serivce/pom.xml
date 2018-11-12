@@ -11,12 +11,27 @@
 
     <artifactId>lm-mall-serivce</artifactId>
 
+
+
     <dependencies>
         <dependency>
             <groupId>top.yeonon</groupId>
             <artifactId>lm-mall-repository</artifactId>
             <version>1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.alipay</groupId>
+            <artifactId>sdk-java</artifactId>
+            <version>20161213173952</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alipay</groupId>
+            <artifactId>trade-sdk</artifactId>
+            <version>20161215</version>
+        </dependency>
+
     </dependencies>
 
 </project>
